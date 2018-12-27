@@ -6,9 +6,18 @@ import cv2
 class DrawingShapeUtils(object):
     LINE_THICKNESS = 3
     
-    #TODO(dani): add comment
     @staticmethod
-    def _draw(event,x,y,flags,params):
+    def _select_shape(event,x,y,flags,params):
+        '''
+        Selects the right shape and draws it.
+        event:      A mouse click event
+        x:          x position of cursor
+        y:          y position of cursor
+        flags:      N/A
+        params:     The desired shape as a string ('arrow', 'line', 'zona', 
+                    'rectangle', 'offset') and additional parameters
+        
+        '''
         shape = params[0]
         shapes = {
             'arrow': DrawingShapeUtils._draw_arrow,
@@ -157,7 +166,7 @@ class DrawingShapeUtils(object):
                               (x+width,int(y+height/2)), (0,255,0), 3)
                 
     @staticmethod
-    def capture_mouse_click(pic, scale, prompt, params, resize):
+    def draw(pic, scale, prompt, params, resize):
         global source_img, img, state
         global p1, p2
         
