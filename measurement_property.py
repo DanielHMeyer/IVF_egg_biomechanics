@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 from skimage.exposure import equalize_hist
 from skimage.filters import gaussian
-from drawing_shape_utils import DrawingShapeUtils
+from drawing_shape_utils import DrawingShapeUtils, Shape
+#from enum_utils import Shape
 
 
 class Property(object):
@@ -43,7 +44,7 @@ class PipetteSize(Property):
         prompt = 'Select inner edges of pipette'
         resize = True
         point_1, point_2 = DrawingShapeUtils.draw(pic, self.scale, prompt,
-                                                     ['arrow'], resize)
+                                                     Shape.arrow, [], resize)
         return self._calculate_pipette_size(point_1,point_2)
     
     def _calculate_pipette_size(self, point_1, point_2):
@@ -65,7 +66,7 @@ class PipettePosition(Property):
         prompt = 'Click on pipette tip'
         resize = True
         point_1, point_2 = DrawingShapeUtils.draw(pic, self.scale, prompt, 
-                                                     ['line'], resize)
+                                                     Shape.line, [], resize)
         return self._calculate_pipette_position(point_2)
     
     def _calculate_pipette_position(self, point_2):
@@ -97,7 +98,8 @@ class ZonaThickness(Property):
         w_roi, h_roi = 100, 100
         prompt = 'Select ROI for ZP thickness measurement'
         point_1, point_2 = DrawingShapeUtils.draw(
-                pic, self.scale, prompt, ['rectangle', w_roi, h_roi], resize)
+                pic, self.scale, prompt, Shape.rectangle,
+                [w_roi, h_roi], resize)
         cx, cy = point_2
         pic_roi = pic[int(cy-h_roi/2):int(cy+h_roi/2), 
                       int(cx-w_roi/2):int(cx+w_roi/2)].copy()
@@ -105,7 +107,7 @@ class ZonaThickness(Property):
         resize = True
         prompt = 'Select zona pellucida'
         point_1, point_2 = DrawingShapeUtils.draw(
-                pic_roi, self.scale, prompt, ['arrow'], resize)
+                pic_roi, self.scale, prompt, Shape.arrow, [], resize)
         return self._calculate_zona_thickness(point_1, point_2)
     
     def _calculate_zona_thickness(self, point_1, point_2):
@@ -151,7 +153,7 @@ class AspirationDepth(Property):
         pic  = self.video_frames[0][int(cy-h/2):int(cy+h/2),
                                     int(cx-w/2):int(cx+w/2)].copy()
         point_1, point_2 = DrawingShapeUtils.draw(
-                pic, self.scale, prompt, ['zona', zp_thickness], resize)
+                pic, self.scale, prompt, Shape.zona, [zp_thickness], resize)
         
         aspiration_depth[0] = (point_2[0] / self.scale 
                                 + self.zona_thickness * self.conversion_factor)
@@ -161,7 +163,7 @@ class AspirationDepth(Property):
         prompt = 'Select inner pipette region for automated ZP tracking: '
         resize = False
         point_1, point_2 = DrawingShapeUtils.draw(
-                pic, self.scale, prompt, ['offset', w_roi, h_roi], resize)
+                pic, self.scale, prompt, Shape.offset, [w_roi, h_roi], resize)
         
         off_x, off_y = point_2
         off_x = off_x+w_roi/2
@@ -209,7 +211,7 @@ class AspirationDepth(Property):
                 pic = im[int(cy-h/2):int(cy+h/2),
                          int(cx-w/2):int(cx+w/2)].copy()
                 point_1, point_2 = DrawingShapeUtils.draw(
-                        pic, self.scale, prompt, ['line'], resize)
+                        pic, self.scale, prompt, Shape.line, [], resize)
                 aspiration_depth[i] = point_2[0]
 
             aspiration_depth_manual_pixel = (
