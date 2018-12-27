@@ -2,7 +2,7 @@
 
 import cv2
 from enum import Enum
-#from enum_utils import Shape
+import numpy as np
 
 class Shape(Enum):
     arrow = 1
@@ -12,7 +12,6 @@ class Shape(Enum):
     offset = 5
 
 class DrawingShapeUtils(object):
-    SHAPES = Shape
     LINE_THICKNESS = 3
     COLOR = (155, 155, 155)
     
@@ -23,24 +22,17 @@ class DrawingShapeUtils(object):
         
         shape   (enum)  The desired shape
         '''
-#        shape = params[0]
-#        shapes = {
-#            'arrow': DrawingShapeUtils._draw_arrow,
-#            'line': DrawingShapeUtils._draw_line,
-#            'zona': DrawingShapeUtils._draw_zona_position,
-#            'rectangle': DrawingShapeUtils._draw_rectangle,
-#            'offset': DrawingShapeUtils._draw_rectangle_with_offset}
-#        draw_shape = shapes.get(shape)
-#        if draw_shape:
-#            draw_shape(event,x,y,flags,params)
         shapes = {
             Shape.arrow: DrawingShapeUtils._draw_arrow,
             Shape.line: DrawingShapeUtils._draw_line,
             Shape.zona: DrawingShapeUtils._draw_zona_position,
             Shape.rectangle: DrawingShapeUtils._draw_rectangle,
             Shape.offset: DrawingShapeUtils._draw_rectangle_with_offset}
-        return shapes.get(shape)
-        
+        draw_function = shapes.get(shape)
+        if draw_function:
+            return draw_function
+        else:
+            raise ValueError('Selected shape ({}) is not available'.format(shape))
     
     @staticmethod
     def _draw_arrow(event,x,y,flags,params):
@@ -87,7 +79,6 @@ class DrawingShapeUtils(object):
         flags:      N/A
         params:     N/A
         '''
-        #TODO more comments here and elsewhere, describe the variables
         global img, source_img
         global p1, p2
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -208,15 +199,21 @@ class DrawingShapeUtils(object):
                               DrawingShapeUtils.LINE_THICKNESS)
                 
     @staticmethod
-    def draw(pic, scale, prompt, shape, params, resize):
+    def draw(pic, scale, prompt, shape, params):
+        '''
+        Display an image and draw the desired shape on mouse click.
+        
+        pic:        (array)     A grayscale image
+        scale:      (float)     Scaling factor to enlarge image
+        prompt:     (str)       Message to display with image
+        shape:      (enum)      Desired shape
+        params:     (list)      Additional parameters for drawing function
+        '''
         global source_img, img, state
         global p1, p2
         
         state = False
-        if resize:
-            temp = cv2.resize(pic, (0,0), fx=scale,fy=scale)
-        else:
-            temp = pic.copy()
+        temp = cv2.resize(pic, (0,0), fx=scale,fy=scale)
         source_img = temp.copy()
         img = source_img.copy()
         draw_function = DrawingShapeUtils._select_draw_function(shape)
@@ -233,3 +230,14 @@ class DrawingShapeUtils(object):
                 break
         cv2.destroyAllWindows()
         return y1, y2
+
+if __name__ == '__main__':
+    pic = np.ones((200,300), dtype=np.uint8)*255
+    scale = 2.0
+    prompt = 'Test image'
+    shape = Shape.arrow
+    params = []
+    coord = DrawingShapeUtils.draw(pic, scale, prompt, shape, params)
+    
+    coord2 = DrawingShapeUtils.draw(pic, scale, prompt, 5, params)
+        
