@@ -11,6 +11,7 @@ class Shape(Enum):
     rectangle = 4
     offset = 5
 
+
 class DrawingShapeUtils(object):
     LINE_THICKNESS = 3
     COLOR = (155, 155, 155)
@@ -56,16 +57,16 @@ class DrawingShapeUtils(object):
             state = False
             p2 = (x,y)
             img = source_img.copy()
-            cv2.arrowedLine(img, p1,p2, DrawingShapeUtils.COLOR, 
+            cv2.arrowedLine(img, p1, p2, DrawingShapeUtils.COLOR, 
                             DrawingShapeUtils.LINE_THICKNESS)
-            cv2.arrowedLine(img, p2,p1, DrawingShapeUtils.COLOR, 
+            cv2.arrowedLine(img, p2, p1, DrawingShapeUtils.COLOR, 
                             DrawingShapeUtils.LINE_THICKNESS)
         elif event == cv2.EVENT_MOUSEMOVE:
             if state:
                 img = source_img.copy()
-                cv2.arrowedLine(img, p1,(x,y), DrawingShapeUtils.COLOR, 
+                cv2.arrowedLine(img, p1, (x,y), DrawingShapeUtils.COLOR, 
                                 DrawingShapeUtils.LINE_THICKNESS)
-                cv2.arrowedLine(img, (x,y),p1, DrawingShapeUtils.COLOR, 
+                cv2.arrowedLine(img, (x,y), p1, DrawingShapeUtils.COLOR, 
                                 DrawingShapeUtils.LINE_THICKNESS)
         
     @staticmethod        
@@ -91,7 +92,7 @@ class DrawingShapeUtils(object):
             cv2.putText(img, text, (100,100), 
                         cv2.FONT_HERSHEY_SIMPLEX, 3, DrawingShapeUtils.COLOR, 
                         DrawingShapeUtils.LINE_THICKNESS)
-            cv2.line(img,(x,y+100),(x,y-100), DrawingShapeUtils.COLOR, 
+            cv2.line(img, (x,y+100), (x,y-100), DrawingShapeUtils.COLOR, 
                      DrawingShapeUtils.LINE_THICKNESS)
     
     @staticmethod
@@ -119,9 +120,9 @@ class DrawingShapeUtils(object):
             cv2.putText(img, text, (100,100), 
                         cv2.FONT_HERSHEY_SIMPLEX, 3, DrawingShapeUtils.COLOR, 
                         DrawingShapeUtils.LINE_THICKNESS)
-            cv2.line(img,(x,y+100),(x,y-100), DrawingShapeUtils.COLOR, 
+            cv2.line(img, (x,y+100), (x,y-100), DrawingShapeUtils.COLOR, 
                      DrawingShapeUtils.LINE_THICKNESS)
-            cv2.line(img,(x,y),(x+zp_thickness,y), DrawingShapeUtils.COLOR, 
+            cv2.line(img, (x,y), (x+zp_thickness,y), DrawingShapeUtils.COLOR, 
                      DrawingShapeUtils.LINE_THICKNESS)
     
     @staticmethod
@@ -129,11 +130,18 @@ class DrawingShapeUtils(object):
         '''
         Draw a rectangle on a mouse click event.
         
+        INPUT
+        --------------------------------------------------------------
         event:      A mouse click event
         x:          x position of cursor
         y:          y position of cursor
         flags:      N/A
         params:     desired width and height of the rectangle
+        
+        RETURN
+        ---------------------------------------------------------------
+        p1:         Coordinates of where left mouse button was clicked
+        p2:         Coordinates of where left mouse button was released
         '''
         global img, source_img, state
         global p1, p2
@@ -141,7 +149,7 @@ class DrawingShapeUtils(object):
         if event == cv2.EVENT_LBUTTONDOWN:
             state = True
             img = source_img.copy()
-            cv2.rectangle(img,(int(x-width/2),int(y-height/2)),
+            cv2.rectangle(img, (int(x-width/2),int(y-height/2)),
                           (int(x+width/2),int(y+height/2)), 
                           DrawingShapeUtils.COLOR, 
                           DrawingShapeUtils.LINE_THICKNESS)
@@ -149,7 +157,7 @@ class DrawingShapeUtils(object):
         elif event == cv2.EVENT_LBUTTONUP:
             state = False
             img = source_img.copy()
-            cv2.rectangle(img,(int(x-width/2),int(y-height/2)),
+            cv2.rectangle(img, (int(x-width/2),int(y-height/2)),
                           (int(x+width/2),int(y+height/2)), 
                           DrawingShapeUtils.COLOR, 
                           DrawingShapeUtils.LINE_THICKNESS)
@@ -157,7 +165,7 @@ class DrawingShapeUtils(object):
         if event == cv2.EVENT_MOUSEMOVE:
             if state:
                 img = source_img.copy()
-                cv2.rectangle(img,(int(x-width/2),int(y-height/2)),
+                cv2.rectangle(img, (int(x-width/2),int(y-height/2)),
                               (int(x+width/2),int(y+height/2)), 
                               DrawingShapeUtils.COLOR, 
                               DrawingShapeUtils.LINE_THICKNESS)
@@ -179,21 +187,21 @@ class DrawingShapeUtils(object):
         if event == cv2.EVENT_LBUTTONDOWN:
             state = True
             img = source_img.copy()
-            cv2.rectangle(img,(x,int(y-height/2)),(x+width,int(y+height/2)),
+            cv2.rectangle(img, (x,int(y-height/2)),(x+width,int(y+height/2)),
                           DrawingShapeUtils.COLOR, 
                           DrawingShapeUtils.LINE_THICKNESS)
             p1 = (x,y)
         elif event == cv2.EVENT_LBUTTONUP:
             state = False
             img = source_img.copy()
-            cv2.rectangle(img,(x,int(y-height/2)),(x+width,int(y+height/2)), 
+            cv2.rectangle(img, (x,int(y-height/2)),(x+width,int(y+height/2)), 
                           DrawingShapeUtils.COLOR, 
                           DrawingShapeUtils.LINE_THICKNESS)
             p2 = (x,y)
         if event == cv2.EVENT_MOUSEMOVE:
             if state:
                 img = source_img.copy()
-                cv2.rectangle(img,(x,int(y-height/2)),
+                cv2.rectangle(img, (x,int(y-height/2)),
                               (x+width,int(y+height/2)), 
                               DrawingShapeUtils.COLOR, 
                               DrawingShapeUtils.LINE_THICKNESS)
@@ -213,7 +221,7 @@ class DrawingShapeUtils(object):
         global p1, p2
         
         state = False
-        temp = cv2.resize(pic, (0,0), fx=scale,fy=scale)
+        temp = cv2.resize(pic, (0,0), fx=scale, fy=scale)
         source_img = temp.copy()
         img = source_img.copy()
         draw_function = DrawingShapeUtils._select_draw_function(shape)
