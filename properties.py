@@ -127,7 +127,7 @@ class AspirationDepth(Property):
     HEIGHT_ROI = 60
     
     def __init__(self, video_frames, scale, zona_thickness, 
-                 conversion_factor, time):
+                 conversion_factor, time, manual=False):
         '''
         Initializes the class. For information on video_frames, roi_coord and
         scale see documentation of Property class.
@@ -140,8 +140,9 @@ class AspirationDepth(Property):
         self.zona_thickness = zona_thickness
         self.conversion_factor = conversion_factor
         self.time = time
+        self.manual = manual
     
-    def extract_property(self, manual=False):
+    def extract_property(self):
         '''
         Loads the video frames from the first movement and asks the user 
         to click on the zona/oolemma in each frame to track its movement.
@@ -207,7 +208,7 @@ class AspirationDepth(Property):
         aspiration_depth_auto_mechanical = ((aspiration_depth_auto_pixel-offset) 
                                             * (1e-6) / self.conversion_factor)
         
-        if manual:
+        if self.manual:
             prompt = 'Click on zona pellucida'
             aspiration_depth = np.repeat(-1,len(self.time))
             
