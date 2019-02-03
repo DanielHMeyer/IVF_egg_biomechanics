@@ -85,7 +85,7 @@ class ZonaThickness(Property):
         Initializes the class. For information on video_frames, roi_coord and
         scale see documentation of Procedure class.
         
-        conversion_factor:     (float)    conversion factor [um/pixel] 
+        conversion_factor (float):   conversion factor [um/pixel] 
         '''
         super(ZonaThickness, self).__init__(video_frames, scale)
         self.conversion_factor = conversion_factor
@@ -132,9 +132,9 @@ class AspirationDepth(Property):
         Initializes the class. For information on video_frames, roi_coord and
         scale see documentation of Property class.
         
-        zona_thickness:      (float)     thickness of the zona pellucida
-        conversion_factor:   (float)     conversion factor [um/pixels]
-        time:               (float)     array with time stamps
+        zona_thickness (float):         thickness of the zona pellucida
+        conversion_factor (float):      conversion factor [um/pixels]
+        time (float):                   array with time stamps
         '''
         super(AspirationDepth, self).__init__(video_frames, scale)
         self.zona_thickness = zona_thickness

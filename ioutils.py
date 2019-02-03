@@ -29,8 +29,8 @@ def read_video():
     before the first movement of the oocyte.
     
     return:
-    video_frames     (list)  list of arrays corresponding to the grayscale video frames
-    time            (array) time vector
+        video_frames (list):    list of arrays corresponding to the grayscale video frames
+        time (array):           time vector
     '''
     Tk().withdraw()
     fullPath = askopenfilename()
@@ -107,7 +107,7 @@ def read_pressure():
     Read the pressure log file and return the mean of the applied pressure.
     
     return:
-    appliedPressure     (float)     applied pressure in [psi]
+        appliedPressure (float):     applied pressure in [psi]
     '''
     Tk().withdraw()
     fullPath = askopenfilename()
