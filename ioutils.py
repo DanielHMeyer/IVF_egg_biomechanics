@@ -10,6 +10,12 @@ from tkinter.filedialog import askopenfilename
 import pandas as pd
 
 def load_excel_file():
+    '''
+    Load data from an excel file
+    
+    return:
+        data (dataframe):    A dataframe containing the excel header as column names
+    '''
     Tk().withdraw()
     filename = askopenfilename(initialdir = "/",
                     title = "Select an excel file",
@@ -97,6 +103,17 @@ def read_video():
     return (start_image, video_frames, time)
 
 def _choose_roi(pic, roi_width, roi_height):
+    '''
+    Select an region of interest in an image
+    
+    args:
+        pic (array):        an array with grayscale values of an image
+        roi_width (int):    the desired width of the roi
+        roi_height (int):   the desired height of the roi
+    return:
+        (tuple):            top left corner coordinates, width and height of the roi
+    '''
+    
     prompt = 'Select ROI'
     point_1, point_2 = dsu.DrawingShapeUtils.draw(
             pic, 1.0, prompt, dsu.Shape.rectangle, [roi_width, roi_height])
