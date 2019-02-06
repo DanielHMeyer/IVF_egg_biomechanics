@@ -90,17 +90,17 @@ def read_video():
     if crop_value <= max_time:
         time = np.linspace(0.0,crop_value,num=int(frame_rate*crop_value),endpoint=False)
         time = np.reshape(time, (len(time),1))
-        time = time[:,0]
+        time = time[:,0].tolist()
     else:
         time = np.linspace(0.0,max_time,num=int(frame_rate*max_time), endpoint=False)
         time = np.reshape(time, (len(time),0))
-        time = time[:,0]
+        time = time[:,0].tolist()
     video_frames = frames[time_valve_opened:time_valve_opened+len(time)]
     start_image = video_frames[0]
     x, y, roi_w, roi_h = _choose_roi(start_image, 200, 200)
     video_frames = video_frames[:][int(y-roi_w/2):int(y+roi_h/2),
                           int(x-roi_w/2):int(x+roi_h/2)]
-    return (start_image, video_frames, time)
+    return (video_frames, time)
 
 def _choose_roi(pic, roi_width, roi_height):
     '''
