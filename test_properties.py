@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-''' Test the property class '''
-
 import properties as prop
 import unittest
 
 class TestProperty(unittest.TestCase):
+    ''' Test the property class '''
     def setUp(self):
         pass
     
