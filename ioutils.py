@@ -23,8 +23,10 @@ def load_excel_file():
     if filename.endswith('.xlsx'):
         data = pd.read_excel(filename)
         data.replace(np.nan, 0, inplace=True)
+        data.columns = map(str.upper, data.columns)
     else:
         print('{} is not an excel file.'.format(filename))
+        data = pd.DataFrame()
     return data
 
 def read_video():
