@@ -10,12 +10,16 @@ class PropertyKeys(Enum):
     PIPETTE_SIZE_PIXEL = 'PIPETTE_SIZE_PIXEL'
     MANUAL_CONVERSION_FACTOR = 'MANUAL_CONVERSION_FACTOR'
     ZONA_THICKNESS = 'ZONA_THICKNESS'
-    PERIVITELLINE_SPACE = 'PERIVITELLINE_SPACE'
     ZONA_POSITION = 'ZONA_POSITION'
     TIME = 'TIME'
     ASPIRATION_DEPTH_ZONA_PIXEL = 'ASPIRATION_DEPTH_ZONA_PIXEL'
     ASPIRATION_DEPTH_ZONA_MECH = 'ASPIRATION_DEPTH_ZONA_MECH'
     PIPETTE_TIP_POSITION = 'PIPETTE_TIP_POSITION'
+    
+    @classmethod
+    def has_value(cls, value):
+        return any(value == item.value for item in cls)
+
 
 class OutcomesKeys(Enum):
     ''' A class with keywords of embryo culture outcomes '''
@@ -48,6 +52,11 @@ class ParameterKeys(Enum):
     ETA0_ZP = 'ETA0_ZP'
     ETA1_ZP = 'ETA1_ZP'
     
+    @classmethod
+    def has_value(cls, value):
+        return any(value == item.value for item in cls)
+    
+    
 class PatientKeys(Enum):
     ''' A class with keywords of patient information '''
     PATIENT_NUMBER = 'NUMBER'
@@ -56,6 +65,11 @@ class PatientKeys(Enum):
     CLINIC = 'CLINIC'
     OOCYTE_NUMBER = 'OOCYTE'
     POSITION = 'POSITION'
+    
+    @classmethod
+    def has_value(cls, value):
+        return any(value == item.value for item in cls)
+
 
 class Measurement:
     ''' A container class to store data from aspiration depth measurements '''
@@ -63,35 +77,47 @@ class Measurement:
     _conversion_factor = 1.55       # Conversion factor for pixels to micrometers: 155 pixels per 100 microns
     _pipette_size = 50.0            # pipette diameter [um]
     
-    def __init__(self, patient_number, patient_age, mature_oocytes, clinic, 
-                 oocyte_number, position, outcomes={}):
+    def __init__(self, patient_info, outcomes={}, properties={}, parameters={}):
         '''
         Initialize an instance of the Measurement object
         
         args:
-            patient_number (int):       number of the patient
-            patient_age (int):          age of the patient
-            mature_oocytes (int):       number of mature oocytes collected from the patient
-            clinic (str):               name of the clinic where measurement was performed
-            oocyte_number (int):        number of the oocyte
-            position (int):             measurement position (3/9 or 6 o'clock)
+            patient_info (dict):        patient information with PatientKeys
             outcomes (dict):            dict with clinical results of embryo culture
+            properties (dict):          dict with extracted properties of the measurement
+            paramters (dict):           dict with model parameters fitted to experimental data
         '''
-        self.measurement_data = {}
-        self.set_patient_information(PatientKeys.PATIENT_NUMBER, patient_number)
-        self.set_patient_information(PatientKeys.PATIENT_AGE, patient_age)
-        self.set_patient_information(PatientKeys.MATURE_OOCYTES, mature_oocytes)
-        self.set_patient_information(PatientKeys.CLINIC, clinic)
-        self.set_patient_information(PatientKeys.OOCYTE_NUMBER, oocyte_number)
-        self.set_patient_information(PatientKeys.POSITION, position)
+        for i, arg in enumerate([patient_info, outcomes, 
+                                 properties, parameters]):
+            if not isinstance(arg, dict):
+                raise TypeError('Input {} is invalid. Expected {},'
+                                ' but got {} instead'.format(i+1, 
+                                          dict, type(arg)))
+        
+        self.data = {}
 
+        for key in PatientKeys:
+            self.data[key.value] = -1
+        for key, value in patient_info.items():
+            if PatientKeys.has_value(key):
+                self.set_patient_information(PatientKeys[key], value)
+                
         for key in PropertyKeys:
-            self.measurement_data[key.value] = -1
+            self.data[key.value] = -1
+        if properties:
+            for key, value in properties.items():
+                if PropertyKeys.has_value(key):
+                    self.set_property(PropertyKeys[key], value)
+                    
         for key in ParameterKeys:
-            self.measurement_data[key.value] = -1
+            self.data[key.value] = -1
+        if parameters:
+            for key, value in parameters.items():
+                if ParameterKeys.has_value(key):
+                    self.set_model_parameter(ParameterKeys[key], value)
+                    
         for key in OutcomesKeys:
-            self.measurement_data[key.value] = -1
-
+            self.data[key.value] = -1
         if outcomes:
             for key, value in outcomes.items():
                 if OutcomesKeys.has_value(key):
@@ -117,7 +143,7 @@ class Measurement:
                 raise TypeError('Info is invalid. Expected {},'
                                 ' but got {} instead.'.format(
                         int, type(info)))
-        self.measurement_data[key.value] = info
+        self.data[key.value] = info
     
     def set_outcome(self, key, outcome):
         ''' 
@@ -141,7 +167,7 @@ class Measurement:
                 raise TypeError('Outcome is invalid. Expected {},'
                                 ' but got {} instead.'.format(
                         int, type(outcome)))
-        self.measurement_data[key.value] = outcome
+        self.data[key.value] = outcome
     
     def set_property(self, key, measurement_property):
         '''
@@ -169,7 +195,7 @@ class Measurement:
                                 ' but got {} instead.'.format(float,
                                 type(measurement_property)))
         
-        self.measurement_data[key.value] = property
+        self.data[key.value] = property
        
     def set_model_parameter(self, key, parameter):
         '''
@@ -187,7 +213,7 @@ class Measurement:
             raise TypeError('Parameter is invalid. Expected {},'
                             ' but got {} instead.'.format(
                     float, type(parameter)))
-        self.measurement_data[key.value] = parameter
+        self.data[key.value] = parameter
      
         
 if __name__ == '__main__':
