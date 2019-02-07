@@ -42,7 +42,7 @@ def _extract_data_from_file(filename):
     return data
 
 
-def read_video(rot_angle=0):
+def read_video_file(rot_angle=0):
     """
     Ask the user to choose the corresponding video file for the measurement
     and if the video has to be rotated.
@@ -189,7 +189,7 @@ def _choose_roi(pic, roi_width, roi_height):
             pic, 1.0, prompt, dsu.Shape.rectangle, [roi_width, roi_height])
     return (point_2[0], point_2[1])
 
-def read_pressure():
+def read_pressure_file():
     """
     Read the pressure log file and return the mean of the applied pressure.
     
@@ -208,5 +208,5 @@ def read_pressure():
     return appliedPressure
   
 if __name__ == '__main__':
-    video_frames, time = read_video(180)
-    pressure = read_pressure()
+    video_frames, time = read_video_file(180)
+    pressure = read_pressure_file()
