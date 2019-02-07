@@ -160,55 +160,58 @@ class AspirationDepth(Property):
                                 + self.zona_thickness * self.conversion_factor)
         offset = aspiration_depth[0]
         
-        prompt = 'Select inner pipette region for automated ZP tracking: '
-        point_1, point_2 = DrawingShapeUtils.draw(
-                pic, 1.0, prompt, Shape.offset, [AspirationDepth.WIDTH_ROI, 
-                                                 AspirationDepth.HEIGHT_ROI])
-        
-        off_x, off_y = point_2
-        off_x = off_x+AspirationDepth.WIDTH_ROI/2
-        background = pic[
-                int(off_y-AspirationDepth.HEIGHT_ROI/2):
-                int(off_y+AspirationDepth.HEIGHT_ROI/2),
-                int(off_x-AspirationDepth.WIDTH_ROI/2):
-                int(off_x+AspirationDepth.WIDTH_ROI/2)].copy()
-        background = background.astype(np.uint8)
-        background = (gaussian(background, sigma=2.0)*255).astype(np.int16)
-
-        subtracted_imgs = []
-        
-        for i,img in enumerate(self.video_frames[1:]):
-            roi = img.copy()
-            next_frame_cropped = roi[
+        if not self.manual:
+            prompt = 'Select inner pipette region for automated ZP tracking: '
+            point_1, point_2 = DrawingShapeUtils.draw(
+                    pic, 1.0, prompt, Shape.offset, [AspirationDepth.WIDTH_ROI, 
+                                                     AspirationDepth.HEIGHT_ROI])
+            
+            off_x, off_y = point_2
+            off_x = off_x+AspirationDepth.WIDTH_ROI/2
+            background = pic[
                     int(off_y-AspirationDepth.HEIGHT_ROI/2):
-                    int(off_y+AspirationDepth.HEIGHT_ROI/2), 
+                    int(off_y+AspirationDepth.HEIGHT_ROI/2),
                     int(off_x-AspirationDepth.WIDTH_ROI/2):
                     int(off_x+AspirationDepth.WIDTH_ROI/2)].copy()
-            next_frame_filtered = (gaussian(next_frame_cropped, 
-                                            sigma=2.0)*255).astype(np.int16)
-            subtracted_img = np.abs((next_frame_filtered-background))
-            subtracted_imgs.append(subtracted_img.astype(np.uint8))
+            background = background.astype(np.uint8)
+            background = (gaussian(background, sigma=2.0)*255).astype(np.int16)
+    
+            subtracted_imgs = []
             
-        subtracted_imgs = [np.sum(sub, axis=0) for sub in subtracted_imgs]
-        dsubtracted_imgs = pd.DataFrame(subtracted_imgs)
-        mov = dsubtracted_imgs.rolling(window=10, center=True, axis=1)
-        mean_subtracted_imgs = mov.mean()
-        derivative_subtracted_imgs = (mean_subtracted_imgs.iloc[:,1:].values
-                                      - mean_subtracted_imgs.iloc[:,:-1].values)
-        derivative_subtracted_imgs = np.nan_to_num(derivative_subtracted_imgs)
-        position_zona = []
-        for i in range(len(derivative_subtracted_imgs)):
-                position_zona.append(np.argmin(derivative_subtracted_imgs[i,:]))
-
-        position_zona = np.asarray(position_zona, dtype=np.uint8)
-        position_zona += int(off_x-AspirationDepth.WIDTH_ROI/2)
-        aspiration_depth[1:] = position_zona
-                 
-        aspiration_depth_auto_pixel = np.asarray(aspiration_depth)
-        aspiration_depth_auto_mechanical = ((aspiration_depth_auto_pixel-offset) 
-                                            * (1e-6) / self.conversion_factor)
+            for i,img in enumerate(self.video_frames[1:]):
+                roi = img.copy()
+                next_frame_cropped = roi[
+                        int(off_y-AspirationDepth.HEIGHT_ROI/2):
+                        int(off_y+AspirationDepth.HEIGHT_ROI/2), 
+                        int(off_x-AspirationDepth.WIDTH_ROI/2):
+                        int(off_x+AspirationDepth.WIDTH_ROI/2)].copy()
+                next_frame_filtered = (gaussian(next_frame_cropped, 
+                                                sigma=2.0)*255).astype(np.int16)
+                subtracted_img = np.abs((next_frame_filtered-background))
+                subtracted_imgs.append(subtracted_img.astype(np.uint8))
+                
+            subtracted_imgs = [np.sum(sub, axis=0) for sub in subtracted_imgs]
+            dsubtracted_imgs = pd.DataFrame(subtracted_imgs)
+            mov = dsubtracted_imgs.rolling(window=10, center=True, axis=1)
+            mean_subtracted_imgs = mov.mean()
+            derivative_subtracted_imgs = (mean_subtracted_imgs.iloc[:,1:].values
+                                          - mean_subtracted_imgs.iloc[:,:-1].values)
+            derivative_subtracted_imgs = np.nan_to_num(derivative_subtracted_imgs)
+            position_zona = []
+            for i in range(len(derivative_subtracted_imgs)):
+                    position_zona.append(np.argmin(derivative_subtracted_imgs[i,:]))
+    
+            position_zona = np.asarray(position_zona, dtype=np.uint8)
+            position_zona += int(off_x-AspirationDepth.WIDTH_ROI/2)
+            aspiration_depth[1:] = position_zona
+                     
+            aspiration_depth_auto_pixel = np.asarray(aspiration_depth)
+            aspiration_depth_auto_mechanical = ((aspiration_depth_auto_pixel-offset) 
+                                                * (1e-6) / self.conversion_factor)
+            return (offset, aspiration_depth_auto_pixel, 
+                    aspiration_depth_auto_mechanical)
         
-        if self.manual:
+        else:
             prompt = 'Click on zona pellucida'
             aspiration_depth = np.repeat(-1,len(self.time))
             
@@ -223,13 +226,8 @@ class AspirationDepth(Property):
             aspiration_depth_manual_mechanic = (
                     (aspiration_depth_manual_pixel-offset) 
                     * (1e-6) / self.conversion_factor)
-            return (offset, aspiration_depth_auto_pixel, 
-                    aspiration_depth_auto_mechanical,
-                    aspiration_depth_manual_pixel, 
+            return (offset, aspiration_depth_manual_pixel, 
                     aspiration_depth_manual_mechanic)
-        else:
-            return (offset, aspiration_depth_auto_pixel, 
-                    aspiration_depth_auto_mechanical)
 
 
 if __name__ == '__main__':
