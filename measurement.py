@@ -189,13 +189,18 @@ class Measurement:
                 raise TypeError('Property is invalid. Expected {},'
                                 ' but got {} instead.'.format(list,
                             type(measurement_property)))
+        elif key==PropertyKeys.ZONA_POSITION:
+            if not isinstance(measurement_property, int):
+                raise TypeError('Property is invalid. Expected {},'
+                                ' but got {} instead.'.format(int,
+                                type(measurement_property)))
         else:
             if not isinstance(measurement_property, float):
                 raise TypeError('Property is invalid. Expected {},'
                                 ' but got {} instead.'.format(float,
                                 type(measurement_property)))
         
-        self.data[key.value] = property
+        self.data[key.value] = measurement_property
        
     def set_model_parameter(self, key, parameter):
         '''
