@@ -100,28 +100,28 @@ class Measurement:
             self.data[key.value] = -1
         for key, value in patient_info.items():
             if PatientKeys.has_value(key):
-                self.set_patient_information(PatientKeys[key], value)
+                self.set_patient_information(PatientKeys(key), value)
                 
         for key in PropertyKeys:
             self.data[key.value] = -1
         if properties:
             for key, value in properties.items():
                 if PropertyKeys.has_value(key):
-                    self.set_property(PropertyKeys[key], value)
+                    self.set_property(PropertyKeys(key), value)
                     
         for key in ParameterKeys:
             self.data[key.value] = -1
         if parameters:
             for key, value in parameters.items():
                 if ParameterKeys.has_value(key):
-                    self.set_model_parameter(ParameterKeys[key], value)
+                    self.set_model_parameter(ParameterKeys(key), value)
                     
         for key in OutcomesKeys:
             self.data[key.value] = -1
         if outcomes:
             for key, value in outcomes.items():
                 if OutcomesKeys.has_value(key):
-                    self.set_outcome(OutcomesKeys[key], value)
+                    self.set_outcome(OutcomesKeys(key), value)
     
     def set_patient_information(self, key, info):
         '''
