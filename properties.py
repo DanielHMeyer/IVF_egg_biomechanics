@@ -45,7 +45,7 @@ class PipetteSize(Property):
         Asks the user to draw an arrow between the edges of the pipette.
         Calculates the vertical distance between the edges in pixels.
         '''
-        pic = self.video_frames
+        pic = self.video_frames[0]
         prompt = 'Select inner edges of pipette'
         point_1, point_2 = DrawingShapeUtils.draw(pic, self.scale, prompt,
                                                      Shape.arrow, [])
@@ -63,7 +63,7 @@ class PipettePosition(Property):
         '''
         Asks the user to select the position of the pipette tip.
         '''
-        pic = self.video_frames
+        pic = self.video_frames[0]
         prompt = 'Click on pipette tip'
         point_1, point_2 = DrawingShapeUtils.draw(pic, self.scale, prompt, 
                                                      Shape.line, [])
@@ -95,17 +95,17 @@ class ZonaThickness(Property):
         Asks the user to draw an arrow between outer and
         inner diamter of the zona pellucida.
         '''
-        pic = self.video_frames
-        prompt = 'Select ROI for ZP thickness measurement'
-        point_1, point_2 = DrawingShapeUtils.draw(
-                pic, 1.0, prompt, Shape.rectangle,
-                [ZonaThickness.WIDTH_ROI, ZonaThickness.HEIGHT_ROI])
-        cx, cy = point_2
-        pic_roi = pic[int(cy-ZonaThickness.HEIGHT_ROI/2):
-                        int(cy+ZonaThickness.HEIGHT_ROI/2), 
-                        int(cx-ZonaThickness.WIDTH_ROI/2):
-                        int(cx+ZonaThickness.WIDTH_ROI/2)].copy()
-        pic_roi = (equalize_hist(pic_roi)*255).astype(np.uint8)
+        pic = self.video_frames[0]
+#        prompt = 'Select ROI for ZP thickness measurement'
+#        point_1, point_2 = DrawingShapeUtils.draw(
+#                pic, 1.0, prompt, Shape.rectangle,
+#                [ZonaThickness.WIDTH_ROI, ZonaThickness.HEIGHT_ROI])
+#        cx, cy = point_2
+#        pic_roi = pic[int(cy-ZonaThickness.HEIGHT_ROI/2):
+#                        int(cy+ZonaThickness.HEIGHT_ROI/2), 
+#                        int(cx-ZonaThickness.WIDTH_ROI/2):
+#                        int(cx+ZonaThickness.WIDTH_ROI/2)].copy()
+        pic_roi = (equalize_hist(pic)*255).astype(np.uint8)
         prompt = 'Select zona pellucida'
         point_1, point_2 = DrawingShapeUtils.draw(
                 pic_roi, self.scale, prompt, Shape.arrow, [])
@@ -158,7 +158,7 @@ class AspirationDepth(Property):
         
         aspiration_depth[0] = (point_2[0] / self.scale 
                                 + self.zona_thickness * self.conversion_factor)
-        offset = aspiration_depth[0]
+        offset = int(aspiration_depth[0])
         
         if not self.manual:
             prompt = 'Select inner pipette region for automated ZP tracking: '
@@ -208,8 +208,8 @@ class AspirationDepth(Property):
             aspiration_depth_auto_pixel = np.asarray(aspiration_depth)
             aspiration_depth_auto_mechanical = ((aspiration_depth_auto_pixel-offset) 
                                                 * (1e-6) / self.conversion_factor)
-            return (offset, aspiration_depth_auto_pixel, 
-                    aspiration_depth_auto_mechanical)
+            return (offset, [aspiration_depth_auto_pixel], 
+                    [aspiration_depth_auto_mechanical])
         
         else:
             prompt = 'Click on zona pellucida'
