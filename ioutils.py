@@ -35,7 +35,6 @@ def _extract_data_from_file(filename):
     Returns:
         data (dataframe): a dataframe with the data
     """
-    
     data = pd.read_excel(filename)
     data.replace(np.nan, 0, inplace=True)
     data.columns = map(str.upper, data.columns)
