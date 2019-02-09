@@ -181,14 +181,21 @@ class Measurement:
             raise TypeError('Key is invalid. Expected {},'
                             ' but got {} instead.'.format(
                     PropertyKeys, type(key)))
-        if ((key == PropertyKeys.VIDEO_FRAMES) | 
+        if ((key == PropertyKeys.VIDEO_FRAMES) |
             (key == PropertyKeys.ASPIRATION_DEPTH_ZONA_MECH) |
             (key == PropertyKeys.ASPIRATION_DEPTH_ZONA_PIXEL) |
-            (key == PropertyKeys.TIME)):
+            (key == PropertyKeys.TIME)): 
             if not isinstance(measurement_property, list):
                 raise TypeError('Property is invalid. Expected {},'
                                 ' but got {} instead.'.format(list,
                             type(measurement_property)))
+#        elif  ((key == PropertyKeys.ASPIRATION_DEPTH_ZONA_MECH) |
+#                (key == PropertyKeys.ASPIRATION_DEPTH_ZONA_PIXEL) |
+#                (key == PropertyKeys.TIME)):
+#            if not isinstance(measurement_property, np.ndarray):
+#                raise TypeError('Property is invalid. Expected {},'
+#                                ' but got {} instead.'.format(np.ndarray,
+#                                type(measurement_property)))
         elif key==PropertyKeys.ZONA_POSITION:
             if not isinstance(measurement_property, int):
                 raise TypeError('Property is invalid. Expected {},'
