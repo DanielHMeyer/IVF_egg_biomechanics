@@ -1,2 +1,12 @@
-# This repository contains code to analyze aspiration depth measurements of human eggs or embryos
-# and to train machine learning classifiers to predict their reproductive potential
+# IVF Egg Biomechanics
+## Description
+Predicting the reproductive potential of human eggs (oocytes) based on their biomechanical parameters.
+This repository contains code to:
+* Analyze videos of aspiration depth measurements and extract properties of the measurement
+* Model the biomechanical characteristics of an oocytes
+* Train machine learning classifiers to predict the reproductive potential of the oocytes.
+
+## Installation
+
+## Usage
+Run ...
