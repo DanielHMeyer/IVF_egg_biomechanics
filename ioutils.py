@@ -80,7 +80,7 @@ def read_video_file(rot_angle=0):
     cv2.destroyAllWindows()
     time_valve_opened = _find_starting_point_of_movement(frames)
     time = _create_time_vector(num_frames, time_valve_opened, frame_rate)
-    video_frames = frames[time_valve_opened:time_valve_opened+len(time)]
+    video_frames = frames[time_valve_opened:time_valve_opened+len(time)+1]
     video_frames_cropped = _crop_video_frames(video_frames)
     return (video_frames_cropped, time)
     
@@ -150,13 +150,15 @@ def _create_time_vector(num_frames, time_valve_opened, frame_rate):
     max_time = (num_frames - time_valve_opened)/float(frame_rate) - 0.03
     crop_value = 0.5
     if crop_value <= max_time:
-        time = np.linspace(0.0,crop_value,num=int(frame_rate*crop_value),endpoint=False)
+        time = np.linspace(0.0,crop_value,num=int(frame_rate*crop_value),
+                           endpoint=False)
         time = np.reshape(time, (len(time),1))
-        time = time[:,0].tolist()
+        time = time[:,0]
     else:
-        time = np.linspace(0.0,max_time,num=int(frame_rate*max_time), endpoint=False)
+        time = np.linspace(0.0,max_time,num=int(frame_rate*max_time), 
+                           endpoint=False)
         time = np.reshape(time, (len(time),1))
-        time = time[:,0].tolist()
+        time = time[:,0]
     return time
 
 def _crop_video_frames(video_frames):
@@ -207,5 +209,6 @@ def read_pressure_file():
     return appliedPressure
   
 if __name__ == '__main__':
+    data = load_excel_file()
     video_frames, time = read_video_file(180)
     pressure = read_pressure_file()
