@@ -4,10 +4,10 @@ import numpy as np
 import ioutils
 import properties
 from measurement import PropertyKeys, PatientKeys, ParameterKeys
-import models
+import oocyte_models
 
 
-class Analyzer(object):
+class MeasurementAnalyzer(object):
     '''
     A class to analyze aspiration depth measurements.
     '''
@@ -79,8 +79,8 @@ class Analyzer(object):
         aspiration_depth = self.measurement.data[
                 PropertyKeys.ASPIRATION_DEPTH_ZONA_MECH.value][0]
         applied_force = self.measurement.data[PropertyKeys.APPLIED_FORCE.value]
-        modified_zener = models.ModifiedZener(time, aspiration_depth, 
-                                              applied_force, [], weighted=True)
+        modified_zener = oocyte_models.ModifiedZener(time, aspiration_depth, 
+                                              applied_force)
         params = modified_zener.fit()
         for key, value in params.items():
             if ParameterKeys.has_value(key):
