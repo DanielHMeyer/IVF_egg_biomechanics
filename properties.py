@@ -192,9 +192,8 @@ class AspirationDepth(Property):
     
             position_zona = np.asarray(position_zona, dtype=np.uint8)
             position_zona += int(off_x-AspirationDepth.WIDTH_ROI/2)
-            aspiration_depth = position_zona
                      
-            aspiration_depth_auto_pixel = np.asarray(aspiration_depth)
+            aspiration_depth_auto_pixel = np.asarray(position_zona)
             aspiration_depth_auto_mechanical = ((aspiration_depth_auto_pixel-offset) 
                                                 * (1e-6) / self.conversion_factor)
             return (offset, aspiration_depth_auto_pixel, 
