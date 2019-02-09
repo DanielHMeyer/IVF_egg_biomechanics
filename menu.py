@@ -3,7 +3,7 @@
 import pandas as pd
 import measurement as m
 import ioutils
-import analyzer
+import measurement_analyzer
 
 class Menu:
     ''' Display a menu and run chosen routines. '''
@@ -105,8 +105,8 @@ class Menu:
                     else int(patient_data[outcome_key.value]))
                     for outcome_key in m.OutcomesKeys}
         measurement = m.Measurement(patient_info, outcomes)
-        measurement_analyzer = analyzer.Analyzer(measurement)
-        measurement_analyzer.analyze()
+        meas_analyzer = measurement_analyzer.MeasurementAnalyzer(measurement)
+        meas_analyzer.analyze()
         patient_data = pd.DataFrame(data=[measurement.data.values()], 
                                           columns=measurement.data.keys(),
                                           index=index)
