@@ -147,7 +147,7 @@ class AspirationDepth(Property):
         Loads the video frames from the first movement and asks the user 
         to click on the zona/oolemma in each frame to track its movement.
         ''' 
-        aspiration_depth = np.repeat(-1,len(self.time))
+#        aspiration_depth = np.repeat(-1,len(self.time))
         prompt = 'Click on inner diameter of zona pellucida'
         zp_thickness = int(round(self.zona_thickness
                                  * self.conversion_factor
@@ -156,9 +156,8 @@ class AspirationDepth(Property):
         point_1, point_2 = DrawingShapeUtils.draw(
                 pic, self.scale, prompt, Shape.zona, [zp_thickness])
         
-        aspiration_depth[0] = (point_2[0] / self.scale 
-                                + self.zona_thickness * self.conversion_factor)
-        offset = int(aspiration_depth[0])
+        offset = int((point_2[0] / self.scale 
+                                + self.zona_thickness * self.conversion_factor))
         
         if not self.manual:
             prompt = 'Select inner pipette region for automated ZP tracking: '
@@ -189,7 +188,7 @@ class AspirationDepth(Property):
                                                 sigma=2.0)*255).astype(np.int16)
                 subtracted_img = np.abs((next_frame_filtered-background))
                 subtracted_imgs.append(subtracted_img.astype(np.uint8))
-                
+            
             subtracted_imgs = [np.sum(sub, axis=0) for sub in subtracted_imgs]
             dsubtracted_imgs = pd.DataFrame(subtracted_imgs)
             mov = dsubtracted_imgs.rolling(window=10, center=True, axis=1)
@@ -203,13 +202,13 @@ class AspirationDepth(Property):
     
             position_zona = np.asarray(position_zona, dtype=np.uint8)
             position_zona += int(off_x-AspirationDepth.WIDTH_ROI/2)
-            aspiration_depth[1:] = position_zona
+            aspiration_depth = position_zona
                      
             aspiration_depth_auto_pixel = np.asarray(aspiration_depth)
             aspiration_depth_auto_mechanical = ((aspiration_depth_auto_pixel-offset) 
                                                 * (1e-6) / self.conversion_factor)
-            return (offset, [aspiration_depth_auto_pixel], 
-                    [aspiration_depth_auto_mechanical])
+            return (offset, aspiration_depth_auto_pixel, 
+                    aspiration_depth_auto_mechanical)
         
         else:
             prompt = 'Click on zona pellucida'
@@ -233,15 +232,15 @@ class AspirationDepth(Property):
 if __name__ == '__main__':
     video_frames = list(np.ones((5,200,200), dtype=np.uint8)*100)
     scale = 4.0
-    prop = PipetteSize(video_frames[0], scale)
-    coord = prop.extract_property()
-    print(coord)
+#    prop = PipetteSize(video_frames[0], scale)
+#    coord = prop.extract_property()
+#    print(coord)
+#    
+#    prop1 = ZonaThickness(video_frames[0],scale,1.0)
+#    coord1 = prop1.extract_property()
+#    print(coord1)
     
-    prop1 = ZonaThickness(video_frames[0],scale,1.0)
-    coord1 = prop1.extract_property()
-    print(coord1)
-    
-    prop2 = AspirationDepth(video_frames,scale,20.0,1.0, [0.0,0.1,0.2,0.3,0.4])
+    prop2 = AspirationDepth(video_frames,scale,20.0,1.0, np.asarray([0.0,0.1,0.2,0.3]))
     coord2 = prop2.extract_property()
     print(coord2)
     
