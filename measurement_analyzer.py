@@ -8,9 +8,9 @@ import oocyte_models
 
 
 class MeasurementAnalyzer(object):
-    '''
+    """
     A class to analyze aspiration depth measurements.
-    '''
+    """
     SCALE = 4.0
     
     def __init__(self, measurement):
@@ -41,7 +41,6 @@ class MeasurementAnalyzer(object):
     
     def _extract_properties(self):
         (video_frames, time) = self._prepare_property_extraction()
-#        video_frames = self.measurement.data[PropertyKeys.VIDEO_FRAMES.value]
         pipette_size = properties.PipetteSize(video_frames, self.SCALE)
         
         self.measurement.set_property(PropertyKeys.PIPETTE_SIZE_PIXEL, 
@@ -61,7 +60,6 @@ class MeasurementAnalyzer(object):
         self.measurement.set_property(PropertyKeys.ZONA_THICKNESS,
                                       zona_thickness.extract_property())
         
-#        self.measurement.data[PropertyKeys.TIME.value]
         aspiration_depth = properties.AspirationDepth(video_frames, self.SCALE,
                                 self.measurement.data[PropertyKeys.ZONA_THICKNESS.value],
                                 self.measurement._conversion_factor, time)

@@ -18,11 +18,11 @@ class DrawingShapeUtils(object):
     
     @staticmethod
     def _select_draw_function(shape):
-        '''
+        """
         Selects the right function to draw the desired shape.
         
         shape   (enum)  The desired shape
-        '''
+        """
         shapes = {
             Shape.arrow: DrawingShapeUtils._draw_arrow,
             Shape.line: DrawingShapeUtils._draw_line,
@@ -37,7 +37,7 @@ class DrawingShapeUtils(object):
     
     @staticmethod
     def _draw_arrow(event,x,y,flags,params):
-        '''
+        """
         Draw an arrow from the position where left mouse button is clicked to
         where left mouse button is released.
         
@@ -46,7 +46,7 @@ class DrawingShapeUtils(object):
         y:          y position of cursor
         flags:      N/A
         params:     N/A
-        '''
+        """
         global img, source_img, state
         global p1, p2
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -71,7 +71,7 @@ class DrawingShapeUtils(object):
         
     @staticmethod        
     def _draw_line(event,x,y,flags,params):
-        '''
+        """
         Draw a line at the position where the left mouse button is released.
                 
         event:      A mouse click event
@@ -79,7 +79,7 @@ class DrawingShapeUtils(object):
         y:          y position of cursor
         flags:      N/A
         params:     N/A
-        '''
+        """
         global img, source_img
         global p1, p2
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -97,7 +97,7 @@ class DrawingShapeUtils(object):
     
     @staticmethod
     def _draw_zona_position(event,x,y,flags,params):
-        '''
+        """
         Draw a vertical line at mouse position and a horizontal line 
         with the length of the zona thickness
         
@@ -106,7 +106,7 @@ class DrawingShapeUtils(object):
         y:          y position of cursor
         flags:      N/A
         params:     zona thickness
-        '''
+        """
         global img, source_img
         global p1, p2
         zp_thickness = params[0]
@@ -127,7 +127,7 @@ class DrawingShapeUtils(object):
     
     @staticmethod
     def _draw_rectangle(event,x,y,flags,params):
-        '''
+        """
         Draw a rectangle on a mouse click event.
         
         INPUT
@@ -142,7 +142,7 @@ class DrawingShapeUtils(object):
         ---------------------------------------------------------------
         p1:         Coordinates of where left mouse button was clicked
         p2:         Coordinates of where left mouse button was released
-        '''
+        """
         global img, source_img, state
         global p1, p2
         width, height = params
@@ -172,7 +172,7 @@ class DrawingShapeUtils(object):
                
     @staticmethod
     def _draw_rectangle_with_offset(event,x,y,flags,params):
-        '''
+        """
         Draw a rectangle on a mouse click event.
         
         event:      A mouse click event
@@ -180,7 +180,7 @@ class DrawingShapeUtils(object):
         y:          y position of cursor
         flags:      Flags
         params:     desired width and height of the rectangle
-        '''
+        """
         global img, source_img, state
         global p1, p2
         width, height = params
@@ -208,7 +208,7 @@ class DrawingShapeUtils(object):
                 
     @staticmethod
     def draw(pic, scale, prompt, shape, params):
-        '''
+        """
         Display an image and draw the desired shape on mouse click.
         
         pic:        (array)     A grayscale image
@@ -216,7 +216,7 @@ class DrawingShapeUtils(object):
         prompt:     (str)       Message to display with image
         shape:      (enum)      Desired shape
         params:     (list)      Additional parameters for drawing function
-        '''
+        """
         global source_img, img, state
         global p1, p2
         

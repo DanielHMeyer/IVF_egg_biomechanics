@@ -3,7 +3,7 @@
 from enum import Enum
 
 class PropertyKeys(Enum):
-    ''' A class with keywords of properties '''
+    """ A class with keywords of properties """
     VIDEO_FRAMES = 'VIDEO_FRAMES'
     APPLIED_PRESSURE = 'APPLIED_PRESSURE'
     APPLIED_FORCE = 'APPLIED_FORCE'
@@ -22,7 +22,7 @@ class PropertyKeys(Enum):
 
 
 class OutcomesKeys(Enum):
-    ''' A class with keywords of embryo culture outcomes '''
+    """ A class with keywords of embryo culture outcomes """
     FERTILIZED = 'FERTILIZED'
     DEGENERATED = 'DEGENERATED'
     NONFERT = 'NONFERT'
@@ -45,7 +45,7 @@ class OutcomesKeys(Enum):
 
 
 class ParameterKeys(Enum):
-    ''' A class with keywords of the modified Zener model '''
+    """ A class with keywords of the modified Zener model """
     K0_ZP = 'K0_ZP'
     K1_ZP = 'K1_ZP'
     TAU_ZP = 'TAU_ZP'
@@ -58,7 +58,7 @@ class ParameterKeys(Enum):
     
     
 class PatientKeys(Enum):
-    ''' A class with keywords of patient information '''
+    """ A class with keywords of patient information """
     PATIENT_NUMBER = 'NUMBER'
     PATIENT_AGE = 'AGE'
     MATURE_OOCYTES = 'MII'
@@ -72,13 +72,13 @@ class PatientKeys(Enum):
 
 
 class Measurement:
-    ''' A container class to store data from aspiration depth measurements '''
+    """ A container class to store data from aspiration depth measurements """
     
     _conversion_factor = 1.55       # Conversion factor for pixels to micrometers: 155 pixels per 100 microns
     _pipette_size = 50.0            # pipette diameter [um]
     
     def __init__(self, patient_info, outcomes={}, properties={}, parameters={}):
-        '''
+        """
         Initialize an instance of the Measurement object
         
         args:
@@ -86,7 +86,7 @@ class Measurement:
             outcomes (dict):            dict with clinical results of embryo culture
             properties (dict):          dict with extracted properties of the measurement
             paramters (dict):           dict with model parameters fitted to experimental data
-        '''
+        """
         for i, arg in enumerate([patient_info, outcomes, 
                                  properties, parameters]):
             if not isinstance(arg, dict):
@@ -124,13 +124,13 @@ class Measurement:
                     self.set_outcome(OutcomesKeys(key), value)
     
     def set_patient_information(self, key, info):
-        '''
+        """
         Set information of a patient.
         
         args:
             key (PatientKeys): an attribute of the PatientKeys class
             info (str or int): patient information
-        '''
+        """
         if not isinstance(key, PatientKeys):
             raise TypeError('Key is invalid. Expected {},' 
                     ' but got {} instead.'.format(PatientKeys, type(key)))
@@ -146,13 +146,13 @@ class Measurement:
         self.data[key.value] = info
     
     def set_outcome(self, key, outcome):
-        ''' 
+        """ 
         Set a development outcome of an oocyte.
         
         args:
             key (OutcomeKey): an attribute of the OutcomeKey class
             outcome (str or int): value of the outcome
-        '''
+        """
         if not isinstance(key, OutcomesKeys):
             raise TypeError('Key is invalid. Expected {},'
                             ' but got {} instead.'.format(
@@ -170,13 +170,13 @@ class Measurement:
         self.data[key.value] = outcome
     
     def set_property(self, key, measurement_property):
-        '''
+        """
         Set a property of a measurement.
         
         args:
             key (PropertyKey): an attribute of the PropertyKey class
             property (list, float): the value of the property
-        '''
+        """
         if not isinstance(key, PropertyKeys):
             raise TypeError('Key is invalid. Expected {},'
                             ' but got {} instead.'.format(
@@ -203,13 +203,13 @@ class Measurement:
         self.data[key.value] = measurement_property
        
     def set_model_parameter(self, key, parameter):
-        '''
+        """
         Set a model parameter of the modified Zener model.
         
         args:
             key (ParameterKeys): an attribute of the ParameterKeys class
             parameter (float): value of the model parameter
-        '''
+        """
         if not isinstance(key, ParameterKeys):
             raise TypeError('Key is invalid. Expected {},'
                             ' but got {} instead.'.format(

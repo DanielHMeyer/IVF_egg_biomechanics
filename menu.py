@@ -6,10 +6,10 @@ import ioutils
 import measurement_analyzer
 
 class Menu:
-    ''' Display a menu and run chosen routines. '''
+    """ Display a menu and run chosen routines. """
     
     def __init__(self):
-        ''' Initialize an instance of the Menu class '''
+        """ Initialize an instance of the Menu class """
         self.patient_data = pd.DataFrame()
         self.choices = {
                 '1': self.load_patient_data,
@@ -20,7 +20,7 @@ class Menu:
                 }
         
     def display_menu(self):
-        ''' Display the menu '''
+        """ Display the menu """
         print('''
               ****************************************
               EggBot Menu
@@ -35,7 +35,7 @@ class Menu:
               ''')
                 
     def run(self):
-        ''' Display the menu and respond to choices. '''
+        """ Display the menu and respond to choices. """
         status = True
         while status:
             self.display_menu()
@@ -44,7 +44,7 @@ class Menu:
             [c, status] = self._call_action(choice)
                 
     def _call_action(self, choice):
-        ''' Call a chosen action '''
+        """ Call a chosen action """
         action = self.choices.get(choice)
         if action:
            status = action()
@@ -54,7 +54,7 @@ class Menu:
            return choice, True
     
     def load_patient_data(self):
-        ''' Load patient data from excel file '''
+        """ Load patient data from excel file """
         print('Loading experimental data...')
         self.patient_data = ioutils.load_excel_file()
         print('Experimental data successfully loaded!')

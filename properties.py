@@ -9,21 +9,21 @@ from drawing_shape_utils import DrawingShapeUtils, Shape
 
 
 class Property(object):
-    '''
+    """
     Extract different properties from an aspiration depth measurement.
     
     The property class is a parent class that represents different properties of an
     aspiration depth measurement.
     Every child class implements an extract_property method that extracts the property.
-    '''
+    """
     def __init__(self, video_frames, scale):
-        '''
+        """
         Initializes the instance of the class.
         
         Args:
             video_frames (list):    list of grayscale images
             scale (float):          scaling factor by which images are enlarged
-        '''
+        """
         if not isinstance(video_frames, list):
             raise TypeError('Expected {}, but got {}'.format(
                     list, type(video_frames)))
@@ -35,16 +35,16 @@ class Property(object):
         
 
 class PipetteSize(Property):
-    '''
+    """
     A class used to analyze the pipette size in pixels manually.
     The user gets prompted with an enlarged image of the pipette tip and
     has to draw an arrow between the inner edges of the pipette.
-    '''
+    """
     def extract_property(self):
-        '''
+        """
         Asks the user to draw an arrow between the edges of the pipette.
         Calculates the vertical distance between the edges in pixels.
-        '''
+        """
         pic = self.video_frames[0]
         prompt = 'Select inner edges of pipette'
         point_1, point_2 = DrawingShapeUtils.draw(pic, self.scale, prompt,
@@ -56,13 +56,13 @@ class PipetteSize(Property):
     
     
 class PipettePosition(Property):
-    '''
+    """
     A class to get the position of the pipette tip in the image.
-    '''
+    """
     def extract_property(self):
-        '''
+        """
         Asks the user to select the position of the pipette tip.
-        '''
+        """
         pic = self.video_frames[0]
         prompt = 'Click on pipette tip'
         point_1, point_2 = DrawingShapeUtils.draw(pic, self.scale, prompt, 
@@ -74,27 +74,27 @@ class PipettePosition(Property):
 
 
 class ZonaThickness(Property):
-    '''
+    """
     A class to analyze the zona thickness of an oocyte.
-    '''
+    """
     WIDTH_ROI = 100
     HEIGHT_ROI = 100
     
     def __init__(self, video_frames, scale, conversion_factor):
-        '''
+        """
         Initializes the class. For information on video_frames, roi_coord and
         scale see documentation of Procedure class.
         
         conversion_factor (float):   conversion factor [um/pixel] 
-        '''
+        """
         super(ZonaThickness, self).__init__(video_frames, scale)
         self.conversion_factor = conversion_factor
     
     def extract_property(self):
-        '''
+        """
         Asks the user to draw an arrow between outer and
         inner diamter of the zona pellucida.
-        '''
+        """
         pic = self.video_frames[0]
         pic_roi = (equalize_hist(pic)*255).astype(np.uint8)
         prompt = 'Select zona pellucida'
@@ -110,23 +110,23 @@ class ZonaThickness(Property):
         
 
 class AspirationDepth(Property):
-    '''
+    """
     A class to analyze the aspiration depth of zona pellucida and oolemma
     from video frames.
-    '''
+    """
     WIDTH_ROI = 80
     HEIGHT_ROI = 60
     
     def __init__(self, video_frames, scale, zona_thickness, 
                  conversion_factor, time, manual=False):
-        '''
+        """
         Initializes the class. For information on video_frames, roi_coord and
         scale see documentation of Property class.
         
         zona_thickness (float):         thickness of the zona pellucida
         conversion_factor (float):      conversion factor [um/pixels]
         time (float):                   array with time stamps
-        '''
+        """
         super(AspirationDepth, self).__init__(video_frames, scale)
         self.zona_thickness = zona_thickness
         self.conversion_factor = conversion_factor
@@ -134,10 +134,10 @@ class AspirationDepth(Property):
         self.manual = manual
     
     def extract_property(self):
-        '''
+        """
         Loads the video frames from the first movement and asks the user 
         to click on the zona/oolemma in each frame to track its movement.
-        ''' 
+        """ 
         prompt = 'Click on inner diameter of zona pellucida'
         zp_thickness = int(round(self.zona_thickness
                                  * self.conversion_factor
