@@ -96,15 +96,6 @@ class ZonaThickness(Property):
         inner diamter of the zona pellucida.
         '''
         pic = self.video_frames[0]
-#        prompt = 'Select ROI for ZP thickness measurement'
-#        point_1, point_2 = DrawingShapeUtils.draw(
-#                pic, 1.0, prompt, Shape.rectangle,
-#                [ZonaThickness.WIDTH_ROI, ZonaThickness.HEIGHT_ROI])
-#        cx, cy = point_2
-#        pic_roi = pic[int(cy-ZonaThickness.HEIGHT_ROI/2):
-#                        int(cy+ZonaThickness.HEIGHT_ROI/2), 
-#                        int(cx-ZonaThickness.WIDTH_ROI/2):
-#                        int(cx+ZonaThickness.WIDTH_ROI/2)].copy()
         pic_roi = (equalize_hist(pic)*255).astype(np.uint8)
         prompt = 'Select zona pellucida'
         point_1, point_2 = DrawingShapeUtils.draw(
@@ -147,7 +138,6 @@ class AspirationDepth(Property):
         Loads the video frames from the first movement and asks the user 
         to click on the zona/oolemma in each frame to track its movement.
         ''' 
-#        aspiration_depth = np.repeat(-1,len(self.time))
         prompt = 'Click on inner diameter of zona pellucida'
         zp_thickness = int(round(self.zona_thickness
                                  * self.conversion_factor
@@ -232,13 +222,13 @@ class AspirationDepth(Property):
 if __name__ == '__main__':
     video_frames = list(np.ones((5,200,200), dtype=np.uint8)*100)
     scale = 4.0
-#    prop = PipetteSize(video_frames[0], scale)
-#    coord = prop.extract_property()
-#    print(coord)
-#    
-#    prop1 = ZonaThickness(video_frames[0],scale,1.0)
-#    coord1 = prop1.extract_property()
-#    print(coord1)
+    prop = PipetteSize(video_frames[0], scale)
+    coord = prop.extract_property()
+    print(coord)
+    
+    prop1 = ZonaThickness(video_frames[0],scale,1.0)
+    coord1 = prop1.extract_property()
+    print(coord1)
     
     prop2 = AspirationDepth(video_frames,scale,20.0,1.0, np.asarray([0.0,0.1,0.2,0.3]))
     coord2 = prop2.extract_property()
