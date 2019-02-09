@@ -10,46 +10,36 @@ class Model(object):
     """
     A parent class for different models used to fit the experimental data.
     """
-    def __init__(self, time, aspiration_depth):
+    def __init__(self, time, aspiration_depth, applied_force):
         """
         Initialize an instance of class Model.
         
-        time (array of float):   time vector
-        aspiration_depth (array of float):  aspiration depth
+        Args:
+            time (array of float):   time vector
+            aspiration_depth (array of float):  aspiration depth
+            applied_force (float):  force applied to the oocyte during measurement
         """
         for i, arg in enumerate([time, aspiration_depth]):
             if not isinstance(arg, np.ndarray):
                 raise TypeError('Input {} is invalid. Expected {}, '
                                 ' but got {} instead.'.format(
-                                        i, np.ndarray, type(arg)))
+                                        i+1, np.ndarray, type(arg)))
             if len(arg.shape)!=1:
                 raise ValueError('Expected a 1D array, '
                                  'but got {} instead.'.format(len(arg.shape)))
-                
+        if not isinstance(applied_force, float):
+            raise TypeError('Input for applied_force is invalid.'
+                            'Expected {}, but got {} instead.'.format(
+                                    float, type(applied_force)))
         self.time = time
         self.aspiration_depth = aspiration_depth
+        self.applied_force = applied_force
     
 class ModifiedZener(Model):
     """
     A class to fit the modified zener model to the experimental data.
     """
-    def __init__(self, time, aspiration_depth, applied_force,
-                 bounds, weighted=True):
-        """
-        Initialize the child class
-        
-        Args:
-            time (array):   time vector
-            aspiration_depth (array of float):  aspiration depth
-            applied_force (float):      force applied to oocyte
-            bounds (tuple):             bounds for each of the 4 model parameters
-            weighted (bool):            indicator if weighted fit should be used
-        """
-        super(ModifiedZener, self).__init__(time, aspiration_depth)
-        self.applied_force = applied_force
-        self.bounds = bounds
-        self.weighted = weighted
-    
+  
     @staticmethod
     def _calculate_model_output(X, k0, k1, n1, tau):
         """
@@ -112,12 +102,12 @@ class ModifiedZener(Model):
         if not bounds:
             res_min = minimize(ModifiedZener._objective_fun, params0, 
                                (X, aspiration_depth),
-                               options={'gtol': 1e-14, 'disp': True})
+                               options={'gtol': 1e-14, 'disp': False})
         else:
             res_min = minimize(ModifiedZener._objective_fun, params0, 
                                (X, aspiration_depth), 
                                method='TNC', bounds=bounds, 
-                               options={'gtol': 1e-14, 'disp': True})
+                               options={'gtol': 1e-14, 'disp': False})
         k0, k1, eta1, tau = res_min.x
         eta0 = tau*(k0*k1)/(k0 + k1)
         params = {ParameterKeys.K0_ZP.value: k0, ParameterKeys.K1_ZP.value: k1,
@@ -156,11 +146,27 @@ class ModifiedZener(Model):
         plt.pause(1)
     
     
-    def fit(self):
+    def fit(self, bounds=(), weighted=True):
         """
         Fit the model to the experimental data.
+        
+        Args:
+            bounds (tuple): limits for the model parameters
+            weighted (bool): True for weighted fit
         """
-        if self.weighted:
+        if not isinstance(bounds, tuple):
+            raise TypeError('Invalid type for input bounds.'
+                            'Expected {}, but got {} instead.'.format(
+                                    tuple, type(bounds)))
+        if len(bounds)!=4:
+            raise ValueError('Invalid size for input bounds.'
+                             'Expected length 4, but got length {} instead.'.format(
+                                     len(bounds)))
+        if not isinstance(weighted, bool):
+            raise TypeError('Invalid type for input weighted.'
+                            'Expected {}, but got {} instead.'.format(
+                                    bool, type(weighted)))
+        if weighted:
             weights = np.repeat(0.1, len(self.time))
             weights[0] = 10
             weights[1:5] = 1
@@ -169,7 +175,7 @@ class ModifiedZener(Model):
 
         params = ModifiedZener._optimize_model_parameters(self.time, 
                                     self.aspiration_depth, 
-                                    self.applied_force, weights, self.bounds)
+                                    self.applied_force, weights, bounds)
         ModifiedZener._plot_fits(self.aspiration_depth, self.time, params, 
                                  self.applied_force)
         return params
