@@ -17,7 +17,7 @@ def load_excel_file():
         data (dataframe):   A dataframe using the first line of the excel file
                             as column names.
     """
-    filename = _choose_file('.xlsx')
+    filename = choose_file('.xlsx')
     if filename.endswith('.xlsx'):
         data = _extract_data_from_file(filename)
     else:
@@ -55,7 +55,7 @@ def read_video_file(rot_angle=0):
         video_frames (list):    list of arrays corresponding to the grayscale video frames
         time (list):            list of time points
     """
-    full_path = _choose_file('.avi')
+    full_path = choose_file('.avi')
     path = str(os.path.dirname(full_path))
     filename = str(os.path.basename(full_path))
     os.chdir(path)
@@ -84,7 +84,7 @@ def read_video_file(rot_angle=0):
     video_frames_cropped = _crop_video_frames(video_frames)
     return (video_frames_cropped, time)
     
-def _choose_file(extension):
+def choose_file(extension):
     """
     Ask user to choose a file with the correct extension.
     
@@ -197,7 +197,7 @@ def read_pressure_file():
     ReturnsS:
         appliedPressure (float):     applied pressure in [psi]
     """
-    full_path = _choose_file('.txt')
+    full_path = choose_file('.txt')
     path = str(os.path.dirname(full_path))
     filename = str(os.path.basename(full_path))
     os.chdir(path)
