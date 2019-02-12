@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
+import numpy as np
 import measurement as m
 import ioutils
-import measurement_analyzer
+from measurement_analyzer import MeasurementAnalyzer
+import outcome_predictor
 
 class Menu:
     """ Display a menu and run chosen routines. """
@@ -14,9 +16,8 @@ class Menu:
         self.choices = {
                 '1': self.load_patient_data,
                 '2': self.analyze_measurement,
-                '3': self.create_dataset,
-                '4': self.train_classifier,
-                '5': self.quit_menu
+                '3': self.train_classifier,
+                '4': self.quit_menu
                 }
         
     def display_menu(self):
@@ -27,9 +28,8 @@ class Menu:
               
               1. Load patient data
               2. Analyze a measurement
-              3. Create a dataset of measurements
-              4. Train classifier
-              5. Quit
+              3. Train classifier
+              4. Quit
               ****************************************
               
               ''')
@@ -61,6 +61,9 @@ class Menu:
         return True
     
     def analyze_measurement(self):
+        if self.patient_data.empty:
+            print('No patient data loaded yet!')
+            return True
         print('Preparing measurement analysis ...')
         patient_data = self.patient_data[self.patient_data['MEASURED']==1]
         patient_number = int(input('What is the patient number? '))
@@ -105,21 +108,37 @@ class Menu:
                     else int(patient_data[outcome_key.value]))
                     for outcome_key in m.OutcomesKeys}
         measurement = m.Measurement(patient_info, outcomes)
-        meas_analyzer = measurement_analyzer.MeasurementAnalyzer(measurement)
+        meas_analyzer = MeasurementAnalyzer(measurement)
         meas_analyzer.analyze()
         patient_data = pd.DataFrame(data=[measurement.data.values()], 
                                           columns=measurement.data.keys(),
                                           index=index)
         self.patient_data.update(patient_data)
-        self.patient_data.to_excel('TaiwanData.xlsx')
+        filename = ioutils.choose_file('.xlsx')
+        self.patient_data.to_excel(filename)
         return True
-        
-    def create_dataset(self):
-        print('You entered 3')
-        return True
-        
+               
     def train_classifier(self):
-        print('You entered 4')
+#        features = [m.ParameterKeys.K0_ZP.value,
+#                    m.ParameterKeys.K1_ZP.value,
+#                    m.ParameterKeys.TAU_ZP.value,
+#                    m.ParameterKeys.ETA0_ZP.value,
+#                    m.ParameterKeys.ETA1_ZP.value,
+#                    m.PatientKeys.PATIENT_AGE.value,
+#                    m.PatientKeys.MATURE_OOCYTES.value]
+        features = [m.ParameterKeys.K0_ZP.value,
+                    m.ParameterKeys.K1_ZP.value,
+                    m.ParameterKeys.TAU_ZP.value]        
+        X = self.patient_data[self.patient_data[
+                m.OutcomesKeys.FERTILIZED.value]==1]
+        X = X[features]
+        X = X.apply(np.log)
+        y = self.patient_data[self.patient_data[
+                m.OutcomesKeys.FERTILIZED.value]==1]
+        y = y[m.OutcomesKeys.ANYBLAST.value]
+        predictor = outcome_predictor.OutcomePredictor('svm', 'forward')
+        X_train, X_test, y_train, y_test = predictor._create_train_test_set(X,y)
+        predictor.fit(X_train, y_train)
         return True
         
     def quit_menu(self):
