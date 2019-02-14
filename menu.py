@@ -119,16 +119,13 @@ class Menu:
         return True
                
     def train_classifier(self):
-#        features = [m.ParameterKeys.K0_ZP.value,
-#                    m.ParameterKeys.K1_ZP.value,
-#                    m.ParameterKeys.TAU_ZP.value,
-#                    m.ParameterKeys.ETA0_ZP.value,
-#                    m.ParameterKeys.ETA1_ZP.value,
-#                    m.PatientKeys.PATIENT_AGE.value,
-#                    m.PatientKeys.MATURE_OOCYTES.value]
         features = [m.ParameterKeys.K0_ZP.value,
                     m.ParameterKeys.K1_ZP.value,
-                    m.ParameterKeys.TAU_ZP.value]        
+                    m.ParameterKeys.TAU_ZP.value,
+                    m.ParameterKeys.ETA0_ZP.value,
+                    m.ParameterKeys.ETA1_ZP.value,
+                    m.PatientKeys.PATIENT_AGE.value,
+                    m.PatientKeys.MATURE_OOCYTES.value]       
         X = self.patient_data[self.patient_data[
                 m.OutcomesKeys.FERTILIZED.value]==1]
         X = X[features]
