@@ -9,4 +9,4 @@ This repository contains code to:
 ## Installation
 
 ## Usage
-Run ...
+Run menu.py to load measurement data, analyze measurements and train supervised machine learning classifiers.
