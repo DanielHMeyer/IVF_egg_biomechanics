@@ -34,7 +34,8 @@ class Model(object):
         self.time = time
         self.aspiration_depth = aspiration_depth
         self.applied_force = applied_force
-    
+
+
 class ModifiedZener(Model):
     """
     A class to fit the modified zener model to the experimental data.
@@ -46,16 +47,16 @@ class ModifiedZener(Model):
         The spring-damper model used to fit the data.
         
         Args:
-            X:                  array (size: Nx2) consisting of time and F0
+            X:                  array (size: Nx2) consisting of time and f0
                 time:           time vector of an aspiration depth measurement
-                F0:             applied force during the measurement
+                f0:             applied force during the measurement
             k0, k1, n1, tau (float):    the parameters of the model
         Returns:
             asp_depth (array):  the calculated aspiration depth based on the parameter values
         """
         time = X[0]
-        F0 = X[1]
-        return (F0/k1 * (1 - k0/(k0+k1)*np.exp(-time/tau)) + time*F0/n1)
+        f0 = X[1]
+        return f0/k1 * (1 - k0/(k0+k1)*np.exp(-time/tau)) + time*f0/n1
     
     @staticmethod
     def _objective_fun(p, X, y):
@@ -75,9 +76,9 @@ class ModifiedZener(Model):
         """
         k0, k1, n1, tau = p
         weights = X[2]
-        aspDepTest = ModifiedZener._calculate_model_output(X[0:2], k0, k1, n1, tau)*1e6
-        aspDepTemp = y*1e6
-        return sum(weights*((aspDepTest-aspDepTemp)**2))
+        asp_dep_test = ModifiedZener._calculate_model_output(X[0:2], k0, k1, n1, tau)*1e6
+        asp_dep_temp = y*1e6
+        return sum(weights*((asp_dep_test-asp_dep_temp)**2))
     
     @staticmethod
     def _optimize_model_parameters(time, aspiration_depth, applied_force,
@@ -95,8 +96,8 @@ class ModifiedZener(Model):
         Returns:
             params (dict): the optimal model parameters
         """
-        F0 = np.repeat(applied_force, len(time))
-        X = [time, F0, weights]
+        f0 = np.repeat(applied_force, len(time))
+        X = [time, f0, weights]
         # k0, k1, n1, tau
         params0 = [0.1, 0.2, 0.1, 0.1]
         if not bounds:
@@ -132,20 +133,19 @@ class ModifiedZener(Model):
         k1 = params[ParameterKeys.K1_ZP.value]
         eta1 = params[ParameterKeys.ETA1_ZP.value]
         tau = params[ParameterKeys.TAU_ZP.value]
-        tFine = np.linspace(0,0.5,num=1000)
-        forceFine = np.repeat(force,len(tFine))
-        X = [tFine, forceFine]
-        aspDep = ModifiedZener._calculate_model_output(X, k0, k1, eta1, tau)
+        t_fine = np.linspace(0, 0.5, num=1000)
+        force_fine = np.repeat(force, len(t_fine))
+        X = [t_fine, force_fine]
+        asp_dep = ModifiedZener._calculate_model_output(X, k0, k1, eta1, tau)
         plt.figure()
         plt.plot(time, aspiration_depth, 'ro', label='Meas')
-        plt.plot(tFine, aspDep, 'g', label='Fit')
+        plt.plot(t_fine, asp_dep, 'g', label='Fit')
         plt.legend(loc='lower right')
         plt.xlim([0,0.5])
         plt.ylim([0,0.000035])
         plt.show
         plt.pause(1)
-    
-    
+
     def fit(self, bounds=(), weighted=True):
         """
         Fit the model to the experimental data.
@@ -179,6 +179,7 @@ class ModifiedZener(Model):
         ModifiedZener._plot_fits(self.aspiration_depth, self.time, params, 
                                  self.applied_force)
         return params
-        
+
+
 if __name__ == '__main__':
     print('models')

@@ -4,6 +4,7 @@ import unittest
 import models
 import numpy as np
 
+
 class TestModels(unittest.TestCase):
     """ Test the Models class """
     def setUp(self):
@@ -15,25 +16,22 @@ class TestModels(unittest.TestCase):
     def test_init_function(self):
         """ Test that instance is initialized correctly """
         self.assertCountEqual(self.model.time, [0.1, 0.2, 0.3, 0.4])
-        self.assertCountEqual(self.model.aspiration_depth, 
-                              [9*1e-6, 10*1e-6, 10.5*1e-6, 11*1e-6])
+        self.assertCountEqual(self.model.aspiration_depth, [9*1e-6, 10*1e-6, 10.5*1e-6, 11*1e-6])
         self.assertEqual(self.model.applied_force, 1.39*1e-6)
         
     def test_invalid_input_time(self):
         """ Test that TypeError is raised when input for time is invalid """
         with self.assertRaises(TypeError):
-            models.ModifiedZener([1,2,3,4], self.aspiration_depth, 1.0)
+            models.ModifiedZener([1, 2, 3, 4], self.aspiration_depth, 1.0)
         with self.assertRaises(ValueError):
-            models.ModifiedZener(np.asarray([[1,2,3,4],[5,6,7,8]]), 
-                                 self.aspiration_depth, 1.0)
+            models.ModifiedZener(np.asarray([[1, 2, 3, 4], [5, 6, 7, 8]]), self.aspiration_depth, 1.0)
     
     def test_invalid_input_aspiration_depth(self):
         """ Test that TypeError is raised when input for aspiration_depth is invalid """
         with self.assertRaises(TypeError):
-            models.ModifiedZener(self.time, [1,2,3,4], 1.0)
+            models.ModifiedZener(self.time, [1, 2, 3, 4], 1.0)
         with self.assertRaises(ValueError):
-            models.ModifiedZener(self.time, 
-                                 np.asarray([[1,2,3,4],[5,6,7,8]]), 1.0)
+            models.ModifiedZener(self.time, np.asarray([[1, 2, 3, 4], [5, 6, 7, 8]]), 1.0)
             
     def test_invalid_input_applied_force(self):
         """ Test that TypeError is raised when input for applied_force is invalid """

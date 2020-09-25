@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from skimage.exposure import equalize_hist
 from skimage.filters import gaussian
-from drawing_shape_utils import DrawingShapeUtils, Shape
+from utils.drawing_shape_utils import DrawingShapeUtils, Shape
 
 
 class Property(object):
@@ -24,11 +24,9 @@ class Property(object):
             scale (float):          scaling factor by which images are enlarged
         """
         if not isinstance(video_frames, list):
-            raise TypeError('Expected {}, but got {}'.format(
-                    list, type(video_frames)))
+            raise TypeError('Expected {}, but got {}'.format(list, type(video_frames)))
         if not isinstance(scale, float):
-            raise TypeError('Expected {}, but got {}'.format(
-                    float, type(scale)))  
+            raise TypeError('Expected {}, but got {}'.format(float, type(scale)))
         self.video_frames = video_frames
         self.scale = scale
         
@@ -46,9 +44,8 @@ class PipetteSize(Property):
         """
         pic = self.video_frames[0]
         prompt = 'Select inner edges of pipette'
-        point_1, point_2 = DrawingShapeUtils.draw(pic, self.scale, prompt,
-                                                     Shape.arrow, [])
-        return self._calculate_pipette_size(point_1,point_2)
+        point_1, point_2 = DrawingShapeUtils.draw(pic, self.scale, prompt, Shape.arrow, [])
+        return self._calculate_pipette_size(point_1, point_2)
     
     def _calculate_pipette_size(self, point_1, point_2):
         return np.abs(point_2[1]-point_1[1])/self.scale
@@ -64,8 +61,7 @@ class PipettePosition(Property):
         """
         pic = self.video_frames[0]
         prompt = 'Click on pipette tip'
-        point_1, point_2 = DrawingShapeUtils.draw(pic, self.scale, prompt, 
-                                                     Shape.line, [])
+        point_1, point_2 = DrawingShapeUtils.draw(pic, self.scale, prompt, Shape.line, [])
         return self._calculate_pipette_position(point_2)
     
     def _calculate_pipette_position(self, point_2):
@@ -145,36 +141,29 @@ class AspirationDepth(Property):
         point_1, point_2 = DrawingShapeUtils.draw(
                 pic, self.scale, prompt, Shape.zona, [zp_thickness])
         
-        offset = int((point_2[0] / self.scale 
-                                + self.zona_thickness * self.conversion_factor))
+        offset = int((point_2[0] / self.scale + self.zona_thickness * self.conversion_factor))
         
         if not self.manual:
             prompt = 'Select inner pipette region for automated ZP tracking: '
-            point_1, point_2 = DrawingShapeUtils.draw(
-                    pic, 1.0, prompt, Shape.offset, [AspirationDepth.WIDTH_ROI, 
-                                                     AspirationDepth.HEIGHT_ROI])
+            point_1, point_2 = DrawingShapeUtils.draw(pic, 1.0, prompt, Shape.offset,
+                                                      [AspirationDepth.WIDTH_ROI, AspirationDepth.HEIGHT_ROI])
             
             off_x, off_y = point_2
             off_x = off_x+AspirationDepth.WIDTH_ROI/2
-            background = pic[
-                    int(off_y-AspirationDepth.HEIGHT_ROI/2):
-                    int(off_y+AspirationDepth.HEIGHT_ROI/2),
-                    int(off_x-AspirationDepth.WIDTH_ROI/2):
-                    int(off_x+AspirationDepth.WIDTH_ROI/2)].copy()
+            background = pic[int(off_y-AspirationDepth.HEIGHT_ROI/2):int(off_y+AspirationDepth.HEIGHT_ROI/2),
+                             int(off_x-AspirationDepth.WIDTH_ROI/2):int(off_x+AspirationDepth.WIDTH_ROI/2)].copy()
             background = background.astype(np.uint8)
             background = (gaussian(background, sigma=2.0)*255).astype(np.int16)
     
             subtracted_imgs = []
             
-            for i,img in enumerate(self.video_frames[1:]):
+            for i, img in enumerate(self.video_frames[1:]):
                 roi = img.copy()
-                next_frame_cropped = roi[
-                        int(off_y-AspirationDepth.HEIGHT_ROI/2):
-                        int(off_y+AspirationDepth.HEIGHT_ROI/2), 
-                        int(off_x-AspirationDepth.WIDTH_ROI/2):
-                        int(off_x+AspirationDepth.WIDTH_ROI/2)].copy()
-                next_frame_filtered = (gaussian(next_frame_cropped, 
-                                                sigma=2.0)*255).astype(np.int16)
+                next_frame_cropped = roi[int(off_y-AspirationDepth.HEIGHT_ROI/2):
+                                         int(off_y+AspirationDepth.HEIGHT_ROI/2),
+                                         int(off_x-AspirationDepth.WIDTH_ROI/2):
+                                         int(off_x+AspirationDepth.WIDTH_ROI/2)].copy()
+                next_frame_filtered = (gaussian(next_frame_cropped, sigma=2.0)*255).astype(np.int16)
                 subtracted_img = np.abs((next_frame_filtered-background))
                 subtracted_imgs.append(subtracted_img.astype(np.uint8))
             
@@ -182,21 +171,19 @@ class AspirationDepth(Property):
             dsubtracted_imgs = pd.DataFrame(subtracted_imgs)
             mov = dsubtracted_imgs.rolling(window=10, center=True, axis=1)
             mean_subtracted_imgs = mov.mean()
-            derivative_subtracted_imgs = (mean_subtracted_imgs.iloc[:,1:].values
-                                          - mean_subtracted_imgs.iloc[:,:-1].values)
+            derivative_subtracted_imgs = (mean_subtracted_imgs.iloc[:, 1:].values
+                                          - mean_subtracted_imgs.iloc[:, :-1].values)
             derivative_subtracted_imgs = np.nan_to_num(derivative_subtracted_imgs)
             position_zona = []
             for i in range(len(derivative_subtracted_imgs)):
-                    position_zona.append(np.argmin(derivative_subtracted_imgs[i,:]))
+                position_zona.append(np.argmin(derivative_subtracted_imgs[i, :]))
     
             position_zona = np.asarray(position_zona, dtype=np.uint8)
             position_zona += int(off_x-AspirationDepth.WIDTH_ROI/2)
                      
             aspiration_depth_auto_pixel = np.asarray(position_zona)
-            aspiration_depth_auto_mechanical = ((aspiration_depth_auto_pixel-offset) 
-                                                * (1e-6) / self.conversion_factor)
-            return (offset, aspiration_depth_auto_pixel, 
-                    aspiration_depth_auto_mechanical)
+            aspiration_depth_auto_mechanical = ((aspiration_depth_auto_pixel-offset) * 1e-6 / self.conversion_factor)
+            return (offset, aspiration_depth_auto_pixel, aspiration_depth_auto_mechanical)
         
         else:
             prompt = 'Click on zona pellucida'
@@ -208,27 +195,22 @@ class AspirationDepth(Property):
                         pic, self.scale, prompt, Shape.line, [])
                 aspiration_depth[i] = point_2[0]
 
-            aspiration_depth_manual_pixel = (
-                    np.asarray(aspiration_depth)/self.scale)
-            aspiration_depth_manual_mechanic = (
-                    (aspiration_depth_manual_pixel-offset) 
-                    * (1e-6) / self.conversion_factor)
-            return (offset, aspiration_depth_manual_pixel, 
-                    aspiration_depth_manual_mechanic)
+            aspiration_depth_manual_pixel = (np.asarray(aspiration_depth)/self.scale)
+            aspiration_depth_manual_mechanic = ((aspiration_depth_manual_pixel-offset) * 1e-6 / self.conversion_factor)
+            return offset, aspiration_depth_manual_pixel, aspiration_depth_manual_mechanic
 
 
 if __name__ == '__main__':
-    video_frames = list(np.ones((5,200,200), dtype=np.uint8)*100)
+    video_frames = list(np.ones((5, 200, 200), dtype=np.uint8)*100)
     scale = 4.0
     prop = PipetteSize(video_frames[0], scale)
     coord = prop.extract_property()
     print(coord)
     
-    prop1 = ZonaThickness(video_frames[0],scale,1.0)
+    prop1 = ZonaThickness(video_frames[0], scale, 1.0)
     coord1 = prop1.extract_property()
     print(coord1)
     
-    prop2 = AspirationDepth(video_frames,scale,20.0,1.0, np.asarray([0.0,0.1,0.2,0.3]))
+    prop2 = AspirationDepth(video_frames, scale, 20.0, 1.0, np.asarray([0.0, 0.1, 0.2, 0.3]))
     coord2 = prop2.extract_property()
     print(coord2)
-    

@@ -18,9 +18,9 @@ class MeasurementAnalyzer(object):
       
     def _prepare_property_extraction(self):
         """ Read in a video and pressure file and store information """
-        if self.measurement.data[PatientKeys.CLINIC.value]=='TAIWAN':
+        if self.measurement.data[PatientKeys.CLINIC.value] == 'TAIWAN':
             video_frames, time = ioutils.read_video_file(180)
-        elif self.measurement.data[PatientKeys.CLINIC.value]=='CHINA':
+        elif self.measurement.data[PatientKeys.CLINIC.value] == 'CHINA':
             video_frames, time = ioutils.read_video_file(90)
         else:
             video_frames, time = ioutils.read_video_file()
@@ -78,7 +78,7 @@ class MeasurementAnalyzer(object):
                 PropertyKeys.ASPIRATION_DEPTH_ZONA_MECH.value][0]
         applied_force = self.measurement.data[PropertyKeys.APPLIED_FORCE.value]
         modified_zener = oocyte_models.ModifiedZener(time, aspiration_depth, 
-                                              applied_force)
+                                                     applied_force)
         params = modified_zener.fit()
         for key, value in params.items():
             if ParameterKeys.has_value(key):
@@ -89,7 +89,6 @@ class MeasurementAnalyzer(object):
         self._fit_models()
         return True
         
-
 
 if __name__ == '__main__':
     print('Analyzer')

@@ -4,6 +4,7 @@ import cv2
 from enum import Enum
 import numpy as np
 
+
 class Shape(Enum):
     arrow = 1
     line = 2
@@ -36,7 +37,7 @@ class DrawingShapeUtils(object):
             raise ValueError('Selected shape ({}) is not available'.format(shape))
     
     @staticmethod
-    def _draw_arrow(event,x,y,flags,params):
+    def _draw_arrow(event, x, y, flags, params):
         """
         Draw an arrow from the position where left mouse button is clicked to
         where left mouse button is released.
@@ -51,11 +52,11 @@ class DrawingShapeUtils(object):
         global p1, p2
         if event == cv2.EVENT_LBUTTONDOWN:
             state = True
-            p1 = (x,y)
+            p1 = (x, y)
             img = source_img.copy()
         elif event == cv2.EVENT_LBUTTONUP:
             state = False
-            p2 = (x,y)
+            p2 = (x, y)
             img = source_img.copy()
             cv2.arrowedLine(img, p1, p2, DrawingShapeUtils.COLOR, 
                             DrawingShapeUtils.LINE_THICKNESS)
@@ -64,13 +65,13 @@ class DrawingShapeUtils(object):
         elif event == cv2.EVENT_MOUSEMOVE:
             if state:
                 img = source_img.copy()
-                cv2.arrowedLine(img, p1, (x,y), DrawingShapeUtils.COLOR, 
+                cv2.arrowedLine(img, p1, (x, y), DrawingShapeUtils.COLOR,
                                 DrawingShapeUtils.LINE_THICKNESS)
-                cv2.arrowedLine(img, (x,y), p1, DrawingShapeUtils.COLOR, 
+                cv2.arrowedLine(img, (x, y), p1, DrawingShapeUtils.COLOR,
                                 DrawingShapeUtils.LINE_THICKNESS)
         
     @staticmethod        
-    def _draw_line(event,x,y,flags,params):
+    def _draw_line(event, x, y, flags, params):
         """
         Draw a line at the position where the left mouse button is released.
                 
@@ -84,19 +85,19 @@ class DrawingShapeUtils(object):
         global p1, p2
         if event == cv2.EVENT_LBUTTONDOWN:
             img = source_img.copy()
-            p1 = (x,y)
+            p1 = (x, y)
         elif event == cv2.EVENT_LBUTTONUP:
-            p2 = (x,y)
+            p2 = (x, y)
             img = source_img.copy()
             text = 'position: %d' % p2[0]
-            cv2.putText(img, text, (100,100), 
+            cv2.putText(img, text, (100, 100),
                         cv2.FONT_HERSHEY_SIMPLEX, 3, DrawingShapeUtils.COLOR, 
                         DrawingShapeUtils.LINE_THICKNESS)
-            cv2.line(img, (x,y+100), (x,y-100), DrawingShapeUtils.COLOR, 
+            cv2.line(img, (x, y+100), (x, y-100), DrawingShapeUtils.COLOR,
                      DrawingShapeUtils.LINE_THICKNESS)
     
     @staticmethod
-    def _draw_zona_position(event,x,y,flags,params):
+    def _draw_zona_position(event, x, y, flags, params):
         """
         Draw a vertical line at mouse position and a horizontal line 
         with the length of the zona thickness
@@ -112,21 +113,21 @@ class DrawingShapeUtils(object):
         zp_thickness = params[0]
         if event == cv2.EVENT_LBUTTONDOWN:
             img = source_img.copy()
-            p1 = (x,y)
+            p1 = (x, y)
         elif event == cv2.EVENT_LBUTTONUP:
-            p2 = (x,y)
+            p2 = (x, y)
             img = source_img.copy()
             text = 'position: %d' % p2[0]
             cv2.putText(img, text, (100,100), 
                         cv2.FONT_HERSHEY_SIMPLEX, 3, DrawingShapeUtils.COLOR, 
                         DrawingShapeUtils.LINE_THICKNESS)
-            cv2.line(img, (x,y+100), (x,y-100), DrawingShapeUtils.COLOR, 
+            cv2.line(img, (x, y+100), (x, y-100), DrawingShapeUtils.COLOR,
                      DrawingShapeUtils.LINE_THICKNESS)
-            cv2.line(img, (x,y), (x+zp_thickness,y), DrawingShapeUtils.COLOR, 
+            cv2.line(img, (x, y), (x+zp_thickness, y), DrawingShapeUtils.COLOR,
                      DrawingShapeUtils.LINE_THICKNESS)
     
     @staticmethod
-    def _draw_rectangle(event,x,y,flags,params):
+    def _draw_rectangle(event, x, y, flags, params):
         """
         Draw a rectangle on a mouse click event.
         
@@ -149,29 +150,29 @@ class DrawingShapeUtils(object):
         if event == cv2.EVENT_LBUTTONDOWN:
             state = True
             img = source_img.copy()
-            cv2.rectangle(img, (int(x-width/2),int(y-height/2)),
-                          (int(x+width/2),int(y+height/2)), 
+            cv2.rectangle(img, (int(x-width/2), int(y-height/2)),
+                          (int(x+width/2), int(y+height/2)),
                           DrawingShapeUtils.COLOR, 
                           DrawingShapeUtils.LINE_THICKNESS)
-            p1 = (x,y)
+            p1 = (x, y)
         elif event == cv2.EVENT_LBUTTONUP:
             state = False
             img = source_img.copy()
-            cv2.rectangle(img, (int(x-width/2),int(y-height/2)),
-                          (int(x+width/2),int(y+height/2)), 
+            cv2.rectangle(img, (int(x-width/2), int(y-height/2)),
+                          (int(x+width/2), int(y+height/2)),
                           DrawingShapeUtils.COLOR, 
                           DrawingShapeUtils.LINE_THICKNESS)
-            p2 = (x,y)
+            p2 = (x, y)
         if event == cv2.EVENT_MOUSEMOVE:
             if state:
                 img = source_img.copy()
-                cv2.rectangle(img, (int(x-width/2),int(y-height/2)),
-                              (int(x+width/2),int(y+height/2)), 
+                cv2.rectangle(img, (int(x-width/2), int(y-height/2)),
+                              (int(x+width/2), int(y+height/2)),
                               DrawingShapeUtils.COLOR, 
                               DrawingShapeUtils.LINE_THICKNESS)
                
     @staticmethod
-    def _draw_rectangle_with_offset(event,x,y,flags,params):
+    def _draw_rectangle_with_offset(event, x, y, flags, params):
         """
         Draw a rectangle on a mouse click event.
         
@@ -187,22 +188,22 @@ class DrawingShapeUtils(object):
         if event == cv2.EVENT_LBUTTONDOWN:
             state = True
             img = source_img.copy()
-            cv2.rectangle(img, (x,int(y-height/2)),(x+width,int(y+height/2)),
+            cv2.rectangle(img, (x, int(y-height/2)), (x+width, int(y+height/2)),
                           DrawingShapeUtils.COLOR, 
                           DrawingShapeUtils.LINE_THICKNESS)
-            p1 = (x,y)
+            p1 = (x, y)
         elif event == cv2.EVENT_LBUTTONUP:
             state = False
             img = source_img.copy()
-            cv2.rectangle(img, (x,int(y-height/2)),(x+width,int(y+height/2)), 
+            cv2.rectangle(img, (x, int(y-height/2)), (x+width, int(y+height/2)),
                           DrawingShapeUtils.COLOR, 
                           DrawingShapeUtils.LINE_THICKNESS)
-            p2 = (x,y)
+            p2 = (x, y)
         if event == cv2.EVENT_MOUSEMOVE:
             if state:
                 img = source_img.copy()
-                cv2.rectangle(img, (x,int(y-height/2)),
-                              (x+width,int(y+height/2)), 
+                cv2.rectangle(img, (x, int(y-height/2)),
+                              (x+width, int(y+height/2)),
                               DrawingShapeUtils.COLOR, 
                               DrawingShapeUtils.LINE_THICKNESS)
                 
@@ -221,7 +222,7 @@ class DrawingShapeUtils(object):
         global p1, p2
         
         state = False
-        temp = cv2.resize(pic, (0,0), fx=scale, fy=scale)
+        temp = cv2.resize(pic, (0, 0), fx=scale, fy=scale)
         source_img = temp.copy()
         img = source_img.copy()
         draw_function = DrawingShapeUtils._select_draw_function(shape)
@@ -231,21 +232,21 @@ class DrawingShapeUtils(object):
         while True:
             cv2.imshow(prompt, img)
             key = 0xFF & cv2.waitKey(1)
-            if key == 27: # escape key
+            if key == 27:  # escape key
                 break
-            elif key == 13: # enter key
+            elif key == 13:  # enter key
                 y1, y2 = p1, p2
                 break
         cv2.destroyAllWindows()
         return y1, y2
 
+
 if __name__ == '__main__':
-    pic = np.ones((200,300), dtype=np.uint8)*255
+    pic = np.ones((200, 300), dtype=np.uint8)*255
     scale = 2.0
     prompt = 'Test image'
     shape = Shape.arrow
     params = []
     coord = DrawingShapeUtils.draw(pic, scale, prompt, shape, params)
-    
     coord2 = DrawingShapeUtils.draw(pic, scale, prompt, 5, params)
-        
+
