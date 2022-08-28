@@ -10,6 +10,7 @@ class Model(object):
     """
     A parent class for different models used to fit the experimental data.
     """
+
     def __init__(self, time, aspiration_depth, applied_force):
         """
         Initialize an instance of class Model.
@@ -23,14 +24,14 @@ class Model(object):
             if not isinstance(arg, np.ndarray):
                 raise TypeError('Input {} is invalid. Expected {}, '
                                 ' but got {} instead.'.format(
-                                        i+1, np.ndarray, type(arg)))
-            if len(arg.shape)!=1:
+                    i + 1, np.ndarray, type(arg)))
+            if len(arg.shape) != 1:
                 raise ValueError('Expected a 1D array, '
                                  'but got {} instead.'.format(len(arg.shape)))
         if not isinstance(applied_force, float):
             raise TypeError('Input for applied_force is invalid.'
                             'Expected {}, but got {} instead.'.format(
-                                    float, type(applied_force)))
+                float, type(applied_force)))
         self.time = time
         self.aspiration_depth = aspiration_depth
         self.applied_force = applied_force
@@ -40,7 +41,7 @@ class ModifiedZener(Model):
     """
     A class to fit the modified zener model to the experimental data.
     """
-  
+
     @staticmethod
     def _calculate_model_output(X, k0, k1, n1, tau):
         """
@@ -56,8 +57,8 @@ class ModifiedZener(Model):
         """
         time = X[0]
         f0 = X[1]
-        return f0/k1 * (1 - k0/(k0+k1)*np.exp(-time/tau)) + time*f0/n1
-    
+        return f0 / k1 * (1 - k0 / (k0 + k1) * np.exp(-time / tau)) + time * f0 / n1
+
     @staticmethod
     def _objective_fun(p, X, y):
         """
@@ -76,10 +77,10 @@ class ModifiedZener(Model):
         """
         k0, k1, n1, tau = p
         weights = X[2]
-        asp_dep_test = ModifiedZener._calculate_model_output(X[0:2], k0, k1, n1, tau)*1e6
-        asp_dep_temp = y*1e6
-        return sum(weights*((asp_dep_test-asp_dep_temp)**2))
-    
+        asp_dep_test = ModifiedZener._calculate_model_output(X[0:2], k0, k1, n1, tau) * 1e6
+        asp_dep_temp = y * 1e6
+        return sum(weights * ((asp_dep_test - asp_dep_temp) ** 2))
+
     @staticmethod
     def _optimize_model_parameters(time, aspiration_depth, applied_force,
                                    weights, bounds):
@@ -101,22 +102,22 @@ class ModifiedZener(Model):
         # k0, k1, n1, tau
         params0 = [0.1, 0.2, 0.1, 0.1]
         if not bounds:
-            res_min = minimize(ModifiedZener._objective_fun, params0, 
+            res_min = minimize(ModifiedZener._objective_fun, params0,
                                (X, aspiration_depth),
                                options={'gtol': 1e-14, 'disp': False})
         else:
-            res_min = minimize(ModifiedZener._objective_fun, params0, 
-                               (X, aspiration_depth), 
-                               method='TNC', bounds=bounds, 
+            res_min = minimize(ModifiedZener._objective_fun, params0,
+                               (X, aspiration_depth),
+                               method='TNC', bounds=bounds,
                                options={'gtol': 1e-14, 'disp': False})
         k0, k1, eta1, tau = res_min.x
-        eta0 = tau*(k0*k1)/(k0 + k1)
+        eta0 = tau * (k0 * k1) / (k0 + k1)
         params = {ParameterKeys.K0_ZP.value: k0, ParameterKeys.K1_ZP.value: k1,
-                  ParameterKeys.ETA0_ZP.value: eta0, 
+                  ParameterKeys.ETA0_ZP.value: eta0,
                   ParameterKeys.ETA1_ZP.value: eta1,
                   ParameterKeys.TAU_ZP.value: tau}
         return params
-    
+
     @staticmethod
     def _plot_fits(aspiration_depth, time, params, force):
         """
@@ -141,8 +142,8 @@ class ModifiedZener(Model):
         plt.plot(time, aspiration_depth, 'ro', label='Meas')
         plt.plot(t_fine, asp_dep, 'g', label='Fit')
         plt.legend(loc='lower right')
-        plt.xlim([0,0.5])
-        plt.ylim([0,0.000035])
+        plt.xlim([0, 0.5])
+        plt.ylim([0, 0.000035])
         plt.show
         plt.pause(1)
 
@@ -156,27 +157,24 @@ class ModifiedZener(Model):
         """
         if not isinstance(bounds, tuple):
             raise TypeError('Invalid type for input bounds.'
-                            'Expected {}, but got {} instead.'.format(
-                                    tuple, type(bounds)))
-        if len(bounds)!=4:
+                            'Expected {}, but got {} instead.'.format(tuple, type(bounds)))
+        if (len(bounds) != 4) & (len(bounds) != 0):
             raise ValueError('Invalid size for input bounds.'
-                             'Expected length 4, but got length {} instead.'.format(
-                                     len(bounds)))
+                             'Expected length 4 or 0, but got length {} instead.'.format(len(bounds)))
         if not isinstance(weighted, bool):
             raise TypeError('Invalid type for input weighted.'
-                            'Expected {}, but got {} instead.'.format(
-                                    bool, type(weighted)))
+                            'Expected {}, but got {} instead.'.format(bool, type(weighted)))
         if weighted:
             weights = np.repeat(0.1, len(self.time))
             weights[0] = 10
             weights[1:5] = 1
         else:
-            weights = np.repeat(1,len(self.time))
+            weights = np.repeat(1, len(self.time))
 
-        params = ModifiedZener._optimize_model_parameters(self.time, 
-                                    self.aspiration_depth, 
-                                    self.applied_force, weights, bounds)
-        ModifiedZener._plot_fits(self.aspiration_depth, self.time, params, 
+        params = ModifiedZener._optimize_model_parameters(self.time,
+                                                          self.aspiration_depth,
+                                                          self.applied_force, weights, bounds)
+        ModifiedZener._plot_fits(self.aspiration_depth, self.time, params,
                                  self.applied_force)
         return params
 

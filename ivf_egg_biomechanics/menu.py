@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 import measurement as m
-import ioutils
+from utils import ioutils
 from measurement_analyzer import MeasurementAnalyzer
 import outcome_predictor
 
@@ -103,7 +103,7 @@ class Menu:
                     for outcome_key in m.OutcomesKeys}
         measurement = m.Measurement(patient_info, outcomes)
         meas_analyzer = MeasurementAnalyzer(measurement)
-        meas_analyzer.analyze()
+        meas_analyzer.analyze(manual)
         patient_data = pd.DataFrame(data=[measurement.data.values()],
                                     columns=measurement.data.keys(),
                                     index=index)
