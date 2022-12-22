@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import ioutils
+import utils.ioutils as ioutils
 import numpy as np
 import pandas as pd
 import unittest
 from unittest.mock import MagicMock
+
 
 class TestIoutils(unittest.TestCase):
     """ Test the ioutils class """
@@ -50,9 +51,9 @@ class TestIoutils(unittest.TestCase):
         frame_rate = 70
         time = ioutils._create_time_vector(num_frames, time_valve_opened, 
                                            frame_rate)
-        time_correct = np.linspace(0.0, 0.5,num=int(frame_rate*0.5),endpoint=False)
-        time_correct = np.reshape(time_correct, (len(time_correct),1))
-        time_correct = time_correct[:,0].tolist()
+        time_correct = np.linspace(0.0, 0.5, num=int(frame_rate*0.5), endpoint=False)
+        time_correct = np.reshape(time_correct, (len(time_correct), 1))
+        time_correct = time_correct[:, 0].tolist()
         self.assertCountEqual(time, time_correct)
         
         num_frames = 53
@@ -60,13 +61,11 @@ class TestIoutils(unittest.TestCase):
                                            frame_rate)
         max_time = (num_frames - time_valve_opened)/float(frame_rate) - 0.03
         time_correct = np.linspace(0.0, max_time,
-                                   num=int(70*max_time),endpoint=False)
-        time_correct = np.reshape(time_correct, (len(time_correct),1))
-        time_correct = time_correct[:,0].tolist()
+                                   num=int(70*max_time), endpoint=False)
+        time_correct = np.reshape(time_correct, (len(time_correct), 1))
+        time_correct = time_correct[:, 0].tolist()
         self.assertCountEqual(time, time_correct)
-        
-        
-        
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -3,6 +3,7 @@
 import properties as prop
 import unittest
 
+
 class TestProperty(unittest.TestCase):
     """ Test the property class """
     def setUp(self):

@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class PropertyKeys(Enum):
     """ A class with keywords of properties """
     VIDEO_FRAMES = 'VIDEO_FRAMES'
@@ -91,8 +92,7 @@ class Measurement:
                                  properties, parameters]):
             if not isinstance(arg, dict):
                 raise TypeError('Input {} is invalid. Expected {},'
-                                ' but got {} instead'.format(i+1, 
-                                          dict, type(arg)))
+                                ' but got {} instead'.format(i+1, dict, type(arg)))
         
         self.data = {}
 
@@ -133,16 +133,15 @@ class Measurement:
         """
         if not isinstance(key, PatientKeys):
             raise TypeError('Key is invalid. Expected {},' 
-                    ' but got {} instead.'.format(PatientKeys, type(key)))
-        if (key == PatientKeys.CLINIC):
+                            ' but got {} instead.'.format(PatientKeys, type(key)))
+        if key == PatientKeys.CLINIC:
             if not isinstance(info, str):
                 raise TypeError('Info is invalid. Expected {},'
                                 ' but got {} instead.'.format(str, type(info)))
         else:
             if not isinstance(info, int):
                 raise TypeError('Info is invalid. Expected {},'
-                                ' but got {} instead.'.format(
-                        int, type(info)))
+                                ' but got {} instead.'.format(int, type(info)))
         self.data[key.value] = info
     
     def set_outcome(self, key, outcome):
@@ -155,18 +154,15 @@ class Measurement:
         """
         if not isinstance(key, OutcomesKeys):
             raise TypeError('Key is invalid. Expected {},'
-                            ' but got {} instead.'.format(
-                            OutcomesKeys, type(key)))
-        if ((key == OutcomesKeys.BLASTGRADE) | (key == OutcomesKeys.D3GRADE)):
+                            ' but got {} instead.'.format(OutcomesKeys, type(key)))
+        if (key == OutcomesKeys.BLASTGRADE) | (key == OutcomesKeys.D3GRADE):
             if not isinstance(outcome, str):
                 raise TypeError('Outcome is invalid. Expected {},'
-                                ' but got {} instead.'.format(
-                        str, type(outcome)))
+                                ' but got {} instead.'.format(str, type(outcome)))
         else:
             if not isinstance(outcome, int):
                 raise TypeError('Outcome is invalid. Expected {},'
-                                ' but got {} instead.'.format(
-                        int, type(outcome)))
+                                ' but got {} instead.'.format(int, type(outcome)))
         self.data[key.value] = outcome
     
     def set_property(self, key, measurement_property):
@@ -179,26 +175,22 @@ class Measurement:
         """
         if not isinstance(key, PropertyKeys):
             raise TypeError('Key is invalid. Expected {},'
-                            ' but got {} instead.'.format(
-                    PropertyKeys, type(key)))
+                            ' but got {} instead.'.format(PropertyKeys, type(key)))
         if ((key == PropertyKeys.VIDEO_FRAMES) |
             (key == PropertyKeys.ASPIRATION_DEPTH_ZONA_MECH) |
             (key == PropertyKeys.ASPIRATION_DEPTH_ZONA_PIXEL) |
             (key == PropertyKeys.TIME)): 
             if not isinstance(measurement_property, list):
                 raise TypeError('Property is invalid. Expected {},'
-                                ' but got {} instead.'.format(list,
-                            type(measurement_property)))
+                                ' but got {} instead.'.format(list, type(measurement_property)))
         elif key==PropertyKeys.ZONA_POSITION:
             if not isinstance(measurement_property, int):
                 raise TypeError('Property is invalid. Expected {},'
-                                ' but got {} instead.'.format(int,
-                                type(measurement_property)))
+                                ' but got {} instead.'.format(int, type(measurement_property)))
         else:
             if not isinstance(measurement_property, float):
                 raise TypeError('Property is invalid. Expected {},'
-                                ' but got {} instead.'.format(float,
-                                type(measurement_property)))
+                                ' but got {} instead.'.format(float, type(measurement_property)))
         
         self.data[key.value] = measurement_property
        
@@ -212,12 +204,10 @@ class Measurement:
         """
         if not isinstance(key, ParameterKeys):
             raise TypeError('Key is invalid. Expected {},'
-                            ' but got {} instead.'.format(
-                    ParameterKeys, type(key)))
+                            ' but got {} instead.'.format(ParameterKeys, type(key)))
         if not isinstance(parameter, float):
             raise TypeError('Parameter is invalid. Expected {},'
-                            ' but got {} instead.'.format(
-                    float, type(parameter)))
+                            ' but got {} instead.'.format(float, type(parameter)))
         self.data[key.value] = parameter
      
         
